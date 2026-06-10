@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GameZone — Play & Win</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0A0E1A;
+      --card-bg: #131929;
+      --card-border: #1e2d4a;
+      --accent: #00FF88;
+      --purple: #7C3AED;
+      --text: #E8EAF0;
+      --muted: #6B7A99;
+      --danger: #FF4C6A;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ---------- NAVBAR ---------- */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 2.5rem;
+      border-bottom: 1px solid var(--card-border);
+      position: sticky;
+      top: 0;
+      background: rgba(10,14,26,0.92);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+    .nav-logo {
+      font-family: 'Orbitron', monospace;
+      font-weight: 900;
+      font-size: 1.4rem;
+      color: var(--accent);
+      letter-spacing: 2px;
+    }
+    .nav-logo span { color: var(--purple); }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* ---------- HERO ---------- */
+    .hero {
+      text-align: center;
+      padding: 5rem 2rem 3.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -100px; left: 50%;
+      transform: translateX(-50%);
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(124,58,237,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 4px;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .hero h1 {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(2.2rem, 6vw, 4.5rem);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 1.2rem;
+    }
+    .hero h1 .glow {
+      color: var(--accent);
+      text-shadow: 0 0 30px rgba(0,255,136,0.5);
+    }
+    .hero p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 480px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.7;
+    }
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      margin-bottom: 0.5rem;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .stat-label { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+
+    /* ---------- SECTION ---------- */
+    .section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3rem 2rem 5rem;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+    .section-header h2 {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, var(--card-border), transparent);
+    }
+    .section-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: rgba(0,255,136,0.12);
+      color: var(--accent);
+      border: 1px solid rgba(0,255,136,0.3);
+      letter-spacing: 1px;
+    }
+
+    /* ---------- GAME GRID ---------- */
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    /* ---------- GAME CARD ---------- */
+    .game-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+      cursor: pointer;
+    }
+    .game-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--accent);
+      box-shadow: 0 0 30px rgba(0,255,136,0.15), 0 10px 40px rgba(0,0,0,0.5);
+    }
+    .game-card.locked:hover {
+      border-color: var(--purple);
+      box-shadow: 0 0 30px rgba(124,58,237,0.15), 0 10px 40px rgba(0,0,0,0.5);
+    }
+    /* Scanline hover effect */
+    .game-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(0,255,136,0.015) 3px,
+        rgba(0,255,136,0.015) 4px
+      );
+      opacity: 0;
+      transition: opacity 0.3s;
+      border-radius: 16px;
+      pointer-events: none;
+    }
+    .game-card:hover::after { opacity: 1; }
+
+    .card-thumb {
+      height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .card-thumb-memory { background: linear-gradient(135deg, #0d1f3c, #1a0e3c); }
+    .card-thumb-cricket { background: linear-gradient(135deg, #0d2614, #1a3a0e); }
+    .card-thumb-snake { background: linear-gradient(135deg, #2a0d0d, #3a1a00); }
+    .card-thumb-puzzle { background: linear-gradient(135deg, #1a0d2e, #0d1a3a); }
+    .card-thumb-quiz { background: linear-gradient(135deg, #2a1a00, #3a2a00); }
+    .card-thumb-tictactoe { background: linear-gradient(135deg, #001a2e, #002e2e); }
+
+    .card-body { padding: 1.3rem 1.4rem 1.4rem; }
+    .card-tags { display: flex; gap: 0.5rem; margin-bottom: 0.8rem; flex-wrap: wrap; }
+    .tag {
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 2px 9px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+    .tag-live { background: rgba(0,255,136,0.12); color: var(--accent); border: 1px solid rgba(0,255,136,0.25); }
+    .tag-coming { background: rgba(124,58,237,0.12); color: #a78bfa; border: 1px solid rgba(124,58,237,0.25); }
+    .tag-type { background: rgba(255,255,255,0.05); color: var(--muted); border: 1px solid rgba(255,255,255,0.08); }
+
+    .card-body h3 {
+      font-family: 'Orbitron', monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.5px;
+    }
+    .card-body p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 1.2rem;
+    }
+    .card-footer { display: flex; align-items: center; justify-content: space-between; }
+    .card-meta { font-size: 0.75rem; color: var(--muted); }
+    .card-meta span { color: var(--accent); font-weight: 600; }
+
+    .btn-play {
+      padding: 0.5rem 1.3rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      font-family: 'Orbitron', monospace;
+      letter-spacing: 1px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-play-active {
+      background: var(--accent);
+      color: #0A0E1A;
+    }
+    .btn-play-active:hover {
+      background: #00cc70;
+      box-shadow: 0 0 20px rgba(0,255,136,0.4);
+    }
+    .btn-play-locked {
+      background: rgba(124,58,237,0.15);
+      color: #a78bfa;
+      border: 1px solid rgba(124,58,237,0.3);
+    }
+    .btn-play-locked:hover {
+      background: rgba(124,58,237,0.25);
+    }
+
+    .lock-overlay {
+      position: absolute;
+      top: 12px; right: 12px;
+      width: 32px; height: 32px;
+      background: rgba(10,14,26,0.7);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* ---------- FOOTER ---------- */
+    footer {
+      border-top: 1px solid var(--card-border);
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    footer span { color: var(--accent); }
+
+    @media (max-width: 600px) {
+      nav { padding: 1rem 1.2rem; }
+      .nav-links { display: none; }
+      .hero { padding: 3rem 1.2rem 2.5rem; }
+      .hero-stats { gap: 1.5rem; }
+      .section { padding: 2rem 1.2rem 3rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <div class="nav-logo">GAME<span>ZONE</span></div>
+    <div class="nav-links">
+      <a href="#">Home</a>
+      <a href="#">Leaderboard</a>
+      <a href="#">About</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-eyebrow">🎮 Your Personal Game Portal</div>
+    <h1>Play. Win.<br><span class="glow">Level Up.</span></h1>
+    <p>Apne banaye huye games ek jagah — koi install nahi, seedha browser mein khelo.</p>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num">6</div>
+        <div class="stat-label">Total Games</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">1</div>
+        <div class="stat-label">Live Now</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">5</div>
+        <div class="stat-label">Coming Soon</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GAMES SECTION -->
+  <main class="section">
+    <div class="section-header">
+      <h2>ALL GAMES</h2>
+      <div class="section-line"></div>
+      <div class="section-badge">6 GAMES</div>
+    </div>
+
+    <div class="game-grid">
+
+      <!-- 1. MEMORY GAME — LIVE -->
+      <div class="game-card" onclick="window.location.href='memory-game/index.html'">
+        <div class="card-thumb card-thumb-memory">🧠</div>
+        <div class="card-body">
+          <div class="card-tags">
+            <span class="tag tag-live">● LIVE</span>
+            <span class="tag tag-type">Puzzle</span>
+            <span class="tag tag-type">Brain</span>
+          </div>
+          <h3>MEMORY GAME</h3>
+          <p>Cards ko flip karo aur matching pairs dhundo. Apni yaaddasht test karo sabse kam moves mein!</p>
+          <div class="card-footer">
+            <div class="card-meta">Best: <span>—</span> moves</div>
+            <a class="btn-play btn-play-active" href="memory-game/index.html">PLAY NOW</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. CRICKET GAME -->
+      <div class="game-card locked">
+        <div class="lock-overlay">🔒</div>
+        <div class="card-thumb card-thumb-cricket">🏏</div>
+        <div class="card-body">
+          <div class="card-tags">
+            <span class="tag tag-coming">COMING SOON</span>
+            <span class="tag tag-type">Sports</span>
+          </div>
+          <h3>CRICKET GAME</h3>
+          <p>Bat karo, sixes maaro! Bowler ki delivery ka timing pakdo aur maximum runs banao.</p>
+          <div class="card-footer">
+            <div class="card-meta">🏆 High Score: <span>—</span></div>
+            <button class="btn-play btn-play-locked">SOON</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. SNAKE GAME -->
+      <div class="game-card locked">
+        <div class="lock-overlay">🔒</div>
+        <div class="card-thumb card-thumb-snake">🐍</div>
+        <div class="card-body">
+          <div class="card-tags">
+            <span class="tag tag-coming">COMING SOON</span>
+            <span class="tag tag-type">Arcade</span>
+          </div>
+          <h3>SNAKE GAME</h3>
+          <p>Classic snake game — khana khao, bado, aur khud se bachte raho. Kitna bada ho sakta hai?</p>
+          <div class="card-footer">
+            <div class="card-meta">🏆 High Score: <span>—</span></div>
+            <button class="btn-play btn-play-locked">SOON</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. PUZZLE GAME -->
+      <div class="game-card locked">
+        <div class="lock-overlay">🔒</div>
+        <div class="card-thumb card-thumb-puzzle">🧩</div>
+        <div class="card-body">
+          <div class="card-tags">
+            <span class="tag tag-coming">COMING SOON</span>
+            <span class="tag tag-type">Puzzle</span>
+          </div>
+          <h3>SLIDE PUZZLE</h3>
+          <p>Tiles ko slide karo aur picture complete karo. Jitna kam moves utna zyada score!</p>
+          <div class="card-footer">
+            <div class="card-meta">Best: <span>—</span> moves</div>
+            <button class="btn-play btn-play-locked">SOON</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. QUIZ GAME -->
+      <div class="game-card locked">
+        <div class="lock-overlay">🔒</div>
+        <div class="card-thumb card-thumb-quiz">❓</div>
+        <div class="card-body">
+          <div class="card-tags">
+            <span class="tag tag-coming">COMING SOON</span>
+            <span class="tag tag-type">Trivia</span>
+          </div>
+          <h3>QUIZ MASTER</h3>
+          <p>GK, Science, Cricket — alag alag topics ke sawal. Kitne sahi jawab de sakte ho?</p>
+          <div class="card-footer">
+            <div class="card-meta">Best: <span>—</span> / 10</div>
+            <button class="btn-play btn-play-locked">SOON</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. TIC TAC TOE -->
+      <div class="game-card locked">
+        <div class="lock-overlay">🔒</div>
+        <div class="card-thumb card-thumb-tictactoe">⭕</div>
+        <div class="card-body">
+          <div class="card-tags">
+            <span class="tag tag-coming">COMING SOON</span>
+            <span class="tag tag-type">2 Player</span>
+          </div>
+          <h3>TIC TAC TOE</h3>
+          <p>Classic X aur O ka game. Dost ke saath khelo ya AI se ladon — kaun jeetega?</p>
+          <div class="card-footer">
+            <div class="card-meta">W/L: <span>—</span></div>
+            <button class="btn-play btn-play-locked">SOON</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    Made with <span>♥</span> — GameZone v1.0 &nbsp;|&nbsp; Aur games <span>coming soon!</span>
+  </footer>
+
+</body>
+</html>

@@ -2,11 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
+  <meta name="robots" content="noindex,nofollow"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Krixels — Play Together, Win Together</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    * { -webkit-user-select: none !important; -moz-user-select: none !important; -ms-user-select: none !important; user-select: none !important; }
+    ::selection { background: transparent !important; }
+    ::-moz-selection { background: transparent !important; }
+
 
     :root {
       --bg: #05070F;
@@ -264,9 +270,21 @@
       border-color: var(--accent);
       box-shadow: 0 0 0 1px var(--accent), 0 20px 60px rgba(0,245,160,0.2), 0 0 100px rgba(0,245,160,0.08);
     }
-    .player-card.soon:hover {
+    .player-card.live.card-3p:hover {
       border-color: var(--purple);
       box-shadow: 0 0 0 1px var(--purple), 0 20px 60px rgba(139,92,246,0.2);
+    }
+    .player-card.live.card-4p:hover {
+      border-color: var(--accent2);
+      box-shadow: 0 0 0 1px var(--accent2), 0 20px 60px rgba(0,212,255,0.2);
+    }
+    .player-card.live.card-5p:hover {
+      border-color: var(--pink);
+      box-shadow: 0 0 0 1px var(--pink), 0 20px 60px rgba(244,114,182,0.2);
+    }
+    .player-card.live.card-6p:hover {
+      border-color: var(--yellow);
+      box-shadow: 0 0 0 1px var(--yellow), 0 20px 60px rgba(251,191,36,0.2);
     }
 
     /* Card glow line at top */
@@ -484,6 +502,13 @@
   </style>
 </head>
 <body>
+<script>
+(function(){
+var _k=atob('CihmdW5jdGlvbigpewogIC8vIDEuIFJpZ2h0IGNsaWNrIGRpc2FibGUKICBkb2N1bWVudC5hZGRFdmVudExpc3RlbmVyKCdjb250ZXh0bWVudScsIGZ1bmN0aW9uKGUpeyBlLnByZXZlbnREZWZhdWx0KCk7IHJldHVybiBmYWxzZTsgfSk7CiAgCiAgLy8gMi4gVGV4dCBzZWxlY3Rpb24gZGlzYWJsZQogIGRvY3VtZW50LmFkZEV2ZW50TGlzdGVuZXIoJ3NlbGVjdHN0YXJ0JywgZnVuY3Rpb24oZSl7IGUucHJldmVudERlZmF1bHQoKTsgcmV0dXJuIGZhbHNlOyB9KTsKICBkb2N1bWVudC5hZGRFdmVudExpc3RlbmVyKCdkcmFnc3RhcnQnLCBmdW5jdGlvbihlKXsgZS5wcmV2ZW50RGVmYXVsdCgpOyByZXR1cm4gZmFsc2U7IH0pOwogIAogIC8vIDMuIENvcHkvQ3V0IGRpc2FibGUKICBkb2N1bWVudC5hZGRFdmVudExpc3RlbmVyKCdjb3B5JywgZnVuY3Rpb24oZSl7IGUucHJldmVudERlZmF1bHQoKTsgcmV0dXJuIGZhbHNlOyB9KTsKICBkb2N1bWVudC5hZGRFdmVudExpc3RlbmVyKCdjdXQnLCBmdW5jdGlvbihlKXsgZS5wcmV2ZW50RGVmYXVsdCgpOyByZXR1cm4gZmFsc2U7IH0pOwogIAogIC8vIDQuIEtleWJvYXJkIHNob3J0Y3V0cyBibG9jawogIGRvY3VtZW50LmFkZEV2ZW50TGlzdGVuZXIoJ2tleWRvd24nLCBmdW5jdGlvbihlKXsKICAgIC8vIEYxMgogICAgaWYoZS5rZXlDb2RlID09PSAxMjMpIHsgZS5wcmV2ZW50RGVmYXVsdCgpOyByZXR1cm4gZmFsc2U7IH0KICAgIC8vIEN0cmwrU2hpZnQrSSwgQ3RybCtTaGlmdCtKLCBDdHJsK1NoaWZ0K0MgKERldlRvb2xzKQogICAgaWYoZS5jdHJsS2V5ICYmIGUuc2hpZnRLZXkgJiYgKGUua2V5Q29kZSA9PT0gNzMgfHwgZS5rZXlDb2RlID09PSA3NCB8fCBlLmtleUNvZGUgPT09IDY3KSkgeyBlLnByZXZlbnREZWZhdWx0KCk7IHJldHVybiBmYWxzZTsgfQogICAgLy8gQ3RybCtVICh2aWV3IHNvdXJjZSkKICAgIGlmKGUuY3RybEtleSAmJiBlLmtleUNvZGUgPT09IDg1KSB7IGUucHJldmVudERlZmF1bHQoKTsgcmV0dXJuIGZhbHNlOyB9CiAgICAvLyBDdHJsK1MgKHNhdmUpCiAgICBpZihlLmN0cmxLZXkgJiYgZS5rZXlDb2RlID09PSA4MykgeyBlLnByZXZlbnREZWZhdWx0KCk7IHJldHVybiBmYWxzZTsgfQogICAgLy8gQ3RybCtBIChzZWxlY3QgYWxsKQogICAgaWYoZS5jdHJsS2V5ICYmIGUua2V5Q29kZSA9PT0gNjUpIHsgZS5wcmV2ZW50RGVmYXVsdCgpOyByZXR1cm4gZmFsc2U7IH0KICAgIC8vIEN0cmwrQyAoY29weSkKICAgIGlmKGUuY3RybEtleSAmJiBlLmtleUNvZGUgPT09IDY3KSB7IGUucHJldmVudERlZmF1bHQoKTsgcmV0dXJuIGZhbHNlOyB9CiAgICAvLyBDdHJsK1AgKHByaW50KQogICAgaWYoZS5jdHJsS2V5ICYmIGUua2V5Q29kZSA9PT0gODApIHsgZS5wcmV2ZW50RGVmYXVsdCgpOyByZXR1cm4gZmFsc2U7IH0KICB9KTsKCiAgLy8gNS4gRGV2VG9vbHMgZGV0ZWN0aW9uIC0gc2l6ZSBiYXNlZAogIHZhciBfdyA9IHdpbmRvdy5vdXRlcldpZHRoIC0gd2luZG93LmlubmVyV2lkdGggPiAxNjA7CiAgdmFyIF9oID0gd2luZG93Lm91dGVySGVpZ2h0IC0gd2luZG93LmlubmVySGVpZ2h0ID4gMTYwOwogIGlmKF93IHx8IF9oKXsgZG9jdW1lbnQuYm9keS5pbm5lckhUTUw9JzxkaXYgc3R5bGU9ImRpc3BsYXk6ZmxleDthbGlnbi1pdGVtczpjZW50ZXI7anVzdGlmeS1jb250ZW50OmNlbnRlcjtoZWlnaHQ6MTAwdmg7YmFja2dyb3VuZDojMDUwNzBGO2NvbG9yOiMwMEY1QTA7Zm9udC1mYW1pbHk6bW9ub3NwYWNlO2ZvbnQtc2l6ZToxLjVyZW07Ij7im5QgQWNjZXNzIERlbmllZDwvZGl2Pic7IH0KICAKICBzZXRJbnRlcnZhbChmdW5jdGlvbigpewogICAgdmFyIHQxID0gbmV3IERhdGUoKTsKICAgIChmdW5jdGlvbigpeyBkZWJ1Z2dlcjsgfSkoKTsKICAgIHZhciB0MiA9IG5ldyBEYXRlKCk7CiAgICBpZih0MiAtIHQxID4gMTAwKXsKICAgICAgZG9jdW1lbnQuYm9keS5pbm5lckhUTUw9JzxkaXYgc3R5bGU9ImRpc3BsYXk6ZmxleDthbGlnbi1pdGVtczpjZW50ZXI7anVzdGlmeS1jb250ZW50OmNlbnRlcjtoZWlnaHQ6MTAwdmg7YmFja2dyb3VuZDojMDUwNzBGO2NvbG9yOiMwMEY1QTA7Zm9udC1mYW1pbHk6bW9ub3NwYWNlO2ZvbnQtc2l6ZToxLjVyZW07Ij7im5QgQWNjZXNzIERlbmllZDwvZGl2Pic7CiAgICB9CiAgICB2YXIgZHcgPSB3aW5kb3cub3V0ZXJXaWR0aCAtIHdpbmRvdy5pbm5lcldpZHRoID4gMTYwOwogICAgdmFyIGRoID0gd2luZG93Lm91dGVySGVpZ2h0IC0gd2luZG93LmlubmVySGVpZ2h0ID4gMTYwOwogICAgaWYoZHcgfHwgZGgpewogICAgICBkb2N1bWVudC5ib2R5LmlubmVySFRNTD0nPGRpdiBzdHlsZT0iZGlzcGxheTpmbGV4O2FsaWduLWl0ZW1zOmNlbnRlcjtqdXN0aWZ5LWNvbnRlbnQ6Y2VudGVyO2hlaWdodDoxMDB2aDtiYWNrZ3JvdW5kOiMwNTA3MEY7Y29sb3I6IzAwRjVBMDtmb250LWZhbWlseTptb25vc3BhY2U7Zm9udC1zaXplOjEuNXJlbTsiPuKblCBBY2Nlc3MgRGVuaWVkPC9kaXY+JzsKICAgIH0KICB9LCAxMDAwKTsKCiAgLy8gNi4gY29uc29sZS5sb2cgb3ZlcnJpZGUgLSBtYWtlIGNvbnNvbGUgdXNlbGVzcwogIHZhciBfYyA9IFsnbG9nJywnd2FybicsJ2Vycm9yJywnaW5mbycsJ2RlYnVnJywndGFibGUnLCdkaXInXTsKICBfYy5mb3JFYWNoKGZ1bmN0aW9uKG0peyB0cnl7IGNvbnNvbGVbbV0gPSBmdW5jdGlvbigpe307IH1jYXRjaChlKXt9IH0pOwogIE9iamVjdC5kZWZpbmVQcm9wZXJ0eSh3aW5kb3csJ2NvbnNvbGUnLHsgZ2V0OiBmdW5jdGlvbigpeyByZXR1cm4ge2xvZzpmdW5jdGlvbigpe30sd2FybjpmdW5jdGlvbigpe30sZXJyb3I6ZnVuY3Rpb24oKXt9LGluZm86ZnVuY3Rpb24oKXt9LGRlYnVnOmZ1bmN0aW9uKCl7fSx0YWJsZTpmdW5jdGlvbigpe30sZGlyOmZ1bmN0aW9uKCl7fSB9OyB9fSk7CgogIC8vIDcuIEJsb2NrIHByaW50CiAgd2luZG93Lm9uYmVmb3JlcHJpbnQgPSBmdW5jdGlvbigpeyByZXR1cm4gZmFsc2U7IH07CiAgCiAgLy8gOC4gRGlzYWJsZSBkcmFnCiAgZG9jdW1lbnQub25kcmFnc3RhcnQgPSBmdW5jdGlvbigpeyByZXR1cm4gZmFsc2U7IH07CiAgCiAgLy8gOS4gSWZyYW1lIHByb3RlY3Rpb24KICBpZih3aW5kb3cudG9wICE9PSB3aW5kb3cuc2VsZil7IHdpbmRvdy50b3AubG9jYXRpb24gPSB3aW5kb3cuc2VsZi5sb2NhdGlvbjsgfQp9KSgpOwo=');
+eval(_k);
+})();
+</script>
+
   <div class="bg-grid"></div>
   <div class="bg-orbs">
     <div class="orb orb1"></div>
@@ -491,7 +516,7 @@
     <div class="orb orb3"></div>
   </div>
 
-  <!-- NAVBAR -->
+  
   <nav>
     <div class="logo">KRIXELS<span class="logo-dot"></span></div>
     <div class="nav-right">
@@ -504,7 +529,7 @@
     </div>
   </nav>
 
-  <!-- HERO -->
+  
   <section class="hero">
     <div class="hero-label">🎮 Multiplayer Gaming Arena</div>
     <h1 class="hero-title">
@@ -524,7 +549,7 @@
         <div class="stat-label">Games</div>
       </div>
       <div class="stat-item">
-        <div class="stat-num">2P</div>
+        <div class="stat-num">6P</div>
         <div class="stat-label">Live Now</div>
       </div>
       <div class="stat-item">
@@ -534,7 +559,7 @@
     </div>
   </section>
 
-  <!-- PLAYER MODE CARDS -->
+  
   <main class="section">
     <div class="section-header">
       <div class="section-eyebrow">Choose Your Arena</div>
@@ -543,7 +568,7 @@
 
     <div class="player-grid">
 
-      <!-- 2 PLAYER — LIVE -->
+      
       <a class="player-card live" href="2-player/index.html">
         <div class="card-glow-line glow-green"></div>
         <div class="card-thumb thumb-2p">
@@ -577,9 +602,8 @@
         </div>
       </a>
 
-      <!-- 3 PLAYER -->
-      <div class="player-card soon">
-        <div class="lock-chip">🔒</div>
+      
+      <a class="player-card live" href="3-player/index.html">
         <div class="card-glow-line glow-purple"></div>
         <div class="card-thumb thumb-3p">
           <div class="float-icons">
@@ -593,7 +617,7 @@
         <div class="card-body">
           <div class="card-top">
             <div class="card-title">THREE PLAYER</div>
-            <span class="status-badge badge-soon">SOON</span>
+            <span class="status-badge badge-live">● LIVE</span>
           </div>
           <p class="card-desc">
             Teen players, teen strategies! Jab teen log khelte hain toh alliances banti hain, betrayal hota hai — asli game start hota hai.
@@ -601,18 +625,17 @@
           <div class="card-games-list">
             <span class="game-chip">🎯 Triple Throw</span>
             <span class="game-chip">🧩 3P Puzzle</span>
-            <span class="game-chip">Coming Soon</span>
+            <span class="game-chip">More coming</span>
           </div>
           <div class="card-cta">
-            <div class="cta-info">🔜 Jaldi aa raha hai</div>
-            <button class="btn-enter btn-lock">LOCKED</button>
+            <div class="cta-info">🟢 Abhi khelo!</div>
+            <span class="btn-enter" style="background:var(--purple);color:#fff;">ENTER →</span>
           </div>
         </div>
-      </div>
+      </a>
 
-      <!-- 4 PLAYER -->
-      <div class="player-card soon">
-        <div class="lock-chip">🔒</div>
+      
+      <a class="player-card live" href="4-player/index.html">
         <div class="card-glow-line glow-blue"></div>
         <div class="card-thumb thumb-4p">
           <div class="float-icons">
@@ -627,7 +650,7 @@
         <div class="card-body">
           <div class="card-top">
             <div class="card-title">FOUR PLAYER</div>
-            <span class="status-badge badge-soon">SOON</span>
+            <span class="status-badge badge-live">● LIVE</span>
           </div>
           <p class="card-desc">
             Classic 2v2 team battles ya free-for-all! Char doston ke saath party games ka asli maza. Sabse intense matches yahaan hote hain.
@@ -635,18 +658,17 @@
           <div class="card-games-list">
             <span class="game-chip">🏏 4P Cricket</span>
             <span class="game-chip">🎲 Board Games</span>
-            <span class="game-chip">Coming Soon</span>
+            <span class="game-chip">More coming</span>
           </div>
           <div class="card-cta">
-            <div class="cta-info">🔜 Jaldi aa raha hai</div>
-            <button class="btn-enter btn-lock">LOCKED</button>
+            <div class="cta-info">🟢 Abhi khelo!</div>
+            <span class="btn-enter" style="background:var(--accent2);color:#05070F;">ENTER →</span>
           </div>
         </div>
-      </div>
+      </a>
 
-      <!-- 5 PLAYER -->
-      <div class="player-card soon">
-        <div class="lock-chip">🔒</div>
+      
+      <a class="player-card live" href="5-player/index.html">
         <div class="card-glow-line glow-pink"></div>
         <div class="card-thumb thumb-5p">
           <div class="float-icons">
@@ -660,7 +682,7 @@
         <div class="card-body">
           <div class="card-top">
             <div class="card-title">FIVE PLAYER</div>
-            <span class="status-badge badge-soon">SOON</span>
+            <span class="status-badge badge-live">● LIVE</span>
           </div>
           <p class="card-desc">
             Pach logon ka chaos! Asymmetric gameplay jahan sabka role alag hota hai. 1 vs 4 ya free-for-all — tu decide kar.
@@ -668,18 +690,17 @@
           <div class="card-games-list">
             <span class="game-chip">🎯 Hunt Mode</span>
             <span class="game-chip">🧠 Mind Games</span>
-            <span class="game-chip">Coming Soon</span>
+            <span class="game-chip">More coming</span>
           </div>
           <div class="card-cta">
-            <div class="cta-info">🔜 Jaldi aa raha hai</div>
-            <button class="btn-enter btn-lock">LOCKED</button>
+            <div class="cta-info">🟢 Abhi khelo!</div>
+            <span class="btn-enter" style="background:var(--pink);color:#05070F;">ENTER →</span>
           </div>
         </div>
-      </div>
+      </a>
 
-      <!-- 6 PLAYER -->
-      <div class="player-card soon">
-        <div class="lock-chip">🔒</div>
+      
+      <a class="player-card live" href="6-player/index.html">
         <div class="card-glow-line glow-green" style="background: linear-gradient(90deg, transparent, var(--yellow), transparent);"></div>
         <div class="card-thumb thumb-6p">
           <div class="float-icons">
@@ -693,7 +714,7 @@
         <div class="card-body">
           <div class="card-top">
             <div class="card-title">SIX PLAYER</div>
-            <span class="status-badge badge-soon">SOON</span>
+            <span class="status-badge badge-live">● LIVE</span>
           </div>
           <p class="card-desc">
             Sabse bada battle! Cha logon ka mega tournament — do teams, ya har koi apne liye. Krixels ka ultimate challenge yahaan hai.
@@ -701,22 +722,22 @@
           <div class="card-games-list">
             <span class="game-chip">🏆 Tournament</span>
             <span class="game-chip">⚔️ Team Wars</span>
-            <span class="game-chip">Coming Soon</span>
+            <span class="game-chip">More coming</span>
           </div>
           <div class="card-cta">
-            <div class="cta-info">🔜 Jaldi aa raha hai</div>
-            <button class="btn-enter btn-lock">LOCKED</button>
+            <div class="cta-info">🟢 Abhi khelo!</div>
+            <span class="btn-enter" style="background:var(--yellow);color:#05070F;">ENTER →</span>
           </div>
         </div>
-      </div>
+      </a>
 
     </div>
   </main>
 
-  <!-- FOOTER -->
+  
   <footer>
     <div class="footer-logo">KRIXELS</div>
-    <div class="footer-text">Made with <span>♥</span> — Krixels v1.0 &nbsp;|&nbsp; Aur modes <span>coming soon!</span></div>
+    <div class="footer-text">Made with <span>♥</span> — Krixels v1.0 &nbsp;|&nbsp; <span>All 6 modes are LIVE!</span></div>
   </footer>
 
 </body>

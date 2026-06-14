@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="robots" content="noindex,nofollow"/><meta http-equiv="Cache-Control" content="no-store"/><script>
+(function(){
+// Right-click block
+document.addEventListener('contextmenu',function(e){e.preventDefault();return false;});
+// Key combos block
+document.addEventListener('keydown',function(e){
+  var b=e.key;
+  if(b==='F12'){e.preventDefault();e.stopPropagation();return false;}
+  if(e.ctrlKey&&e.shiftKey&&('iIjJcCkK'.indexOf(b)!==-1)){e.preventDefault();return false;}
+  if(e.ctrlKey&&('uUsS'.indexOf(b)!==-1)){e.preventDefault();return false;}
+  if(e.ctrlKey&&e.altKey){e.preventDefault();return false;}
+});
+// Disable text selection
+document.addEventListener('selectstart',function(e){e.preventDefault();});
+document.addEventListener('dragstart',function(e){e.preventDefault();});
+// Disable copy paste
+document.addEventListener('copy',function(e){e.preventDefault();});
+// DevTools detection - window size difference
+var _dt=function(){
+  if(window.outerWidth-window.innerWidth>160||window.outerHeight-window.innerHeight>160){
+    document.body.innerHTML='<div style="background:#05070F;color:#00F5A0;font-family:monospace;display:flex;align-items:center;justify-content:center;height:100vh;font-size:2rem;letter-spacing:4px;">ACCESS DENIED</div>';
+  }
+};
+setInterval(_dt,800);
+// Disable right-click on images
+window.addEventListener('load',function(){
+  document.querySelectorAll('img').forEach(function(i){
+    i.setAttribute('oncontextmenu','return false;');
+    i.setAttribute('draggable','false');
+  });
+});
+// No-print CSS injection
+var ns=document.createElement('style');
+ns.textContent='@media print{body{display:none!important;}}*{-webkit-user-select:none!important;-moz-user-select:none!important;user-select:none!important;}';
+document.head.appendChild(ns);
+})();
+</script><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Krixels — 4 Player Games</title><link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/><style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #05070F; --surface: #0C1120; --border: #1B2744;
+      --accent: #00F5A0; --accent2: #00D4FF; --purple: #8B5CF6;
+      --text: #F0F4FF; --muted: #5A6A8A; --muted2: #8A9ABF;
+    }
+    body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+    .bg-grid { position: fixed; inset: 0; background-image: linear-gradient(rgba(0,245,160,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,245,160,0.03) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; z-index: 0; }
+    .bg-orb { position: fixed; width: 500px; height: 500px; background: var(--purple); border-radius: 50%; filter: blur(150px); opacity: 0.07; top: 50%; left: 50%; transform: translate(-50%,-50%); pointer-events: none; z-index: 0; }
+    nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1rem 2.5rem; background: rgba(5,7,15,0.9); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+    .logo { font-family: 'Orbitron', monospace; font-weight: 900; font-size: 1.4rem; letter-spacing: 3px; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-decoration: none; }
+    .nav-back { color: var(--muted2); text-decoration: none; font-size: 0.88rem; font-weight: 500; transition: color 0.2s; }
+    .nav-back:hover { color: var(--accent); }
+    .soon-badge { font-family: 'Orbitron', monospace; font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; padding: 0.3rem 0.8rem; border-radius: 20px; background: rgba(139,92,246,0.12); color: #a78bfa; border: 1px solid rgba(139,92,246,0.3); }
+    .main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 4rem 2rem; position: relative; z-index: 1; }
+    .big-num { font-family: 'Orbitron', monospace; font-weight: 900; font-size: clamp(6rem, 18vw, 12rem); line-height: 1; color: var(--purple); text-shadow: 0 0 80px rgba(139,92,246,0.4); margin-bottom: 0.5rem; }
+    .title { font-family: 'Orbitron', monospace; font-size: clamp(1.2rem, 3vw, 2rem); font-weight: 900; letter-spacing: 3px; margin-bottom: 1rem; }
+    .desc { color: var(--muted2); font-size: 1rem; max-width: 420px; line-height: 1.8; margin-bottom: 3rem; }
+    .coming-box { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 2rem 2.5rem; max-width: 440px; width: 100%; }
+    .coming-label { font-family: 'Orbitron', monospace; font-size: 0.65rem; letter-spacing: 3px; color: var(--muted); margin-bottom: 1rem; text-transform: uppercase; }
+    .coming-title { font-family: 'Orbitron', monospace; font-size: 1.4rem; font-weight: 900; color: var(--purple); margin-bottom: 0.6rem; }
+    .coming-sub { color: var(--muted2); font-size: 0.88rem; line-height: 1.7; margin-bottom: 1.5rem; }
+    .back-btn { display: inline-block; font-family: 'Orbitron', monospace; font-size: 0.78rem; font-weight: 700; letter-spacing: 1.5px; padding: 0.7rem 1.8rem; border-radius: 10px; background: var(--accent); color: #05070F; text-decoration: none; transition: all 0.2s; }
+    .back-btn:hover { background: #00ffaa; box-shadow: 0 0 20px rgba(0,245,160,0.4); }
+    footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 2rem; text-align: center; font-size: 0.8rem; color: var(--muted); }
+    .fl { font-family: 'Orbitron', monospace; font-weight: 900; font-size: 1.1rem; letter-spacing: 3px; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 0.5rem; }
+    footer span { color: var(--accent); }
+  </style>
+</head>
+<body><div class="bg-grid"></div><div class="bg-orb"></div><nav><a class="logo" href="../index.html">KRIXELS</a><a class="nav-back" href="../index.html">← Player Modes</a><div class="soon-badge">🔒 4P SOON</div></nav><main class="main"><div class="big-num">4P</div><h1 class="title">4 PLAYER MODE</h1><p class="desc">Yeh mode abhi development mein hai. Krixels team bahut mehnat se ise bana rahi hai. Jaldi aa raha hai!</p><div class="coming-box"><div class="coming-label">Coming Soon</div><div class="coming-title">🚧 UNDER CONSTRUCTION</div><div class="coming-sub">4 player mode ke games bahut jaldi launch honge. Tab tak 2 Player games khelo aur enjoy karo!</div><a class="back-btn" href="../2-player/index.html">▶ 2P GAMES KHELO</a></div></main><footer><div class="fl">KRIXELS</div>
+    Made with <span>♥</span> — Aur modes <span>coming soon!</span></footer>
+</body>
+</html>

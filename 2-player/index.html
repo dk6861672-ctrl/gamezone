@@ -1,11 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Krixels — 2 Player Games</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-  <style>
+<head><meta name="robots" content="noindex,nofollow"/><meta http-equiv="Cache-Control" content="no-store"/><script>
+(function(){
+// Right-click block
+document.addEventListener('contextmenu',function(e){e.preventDefault();return false;});
+// Key combos block
+document.addEventListener('keydown',function(e){
+  var b=e.key;
+  if(b==='F12'){e.preventDefault();e.stopPropagation();return false;}
+  if(e.ctrlKey&&e.shiftKey&&('iIjJcCkK'.indexOf(b)!==-1)){e.preventDefault();return false;}
+  if(e.ctrlKey&&('uUsS'.indexOf(b)!==-1)){e.preventDefault();return false;}
+  if(e.ctrlKey&&e.altKey){e.preventDefault();return false;}
+});
+// Disable text selection
+document.addEventListener('selectstart',function(e){e.preventDefault();});
+document.addEventListener('dragstart',function(e){e.preventDefault();});
+// Disable copy paste
+document.addEventListener('copy',function(e){e.preventDefault();});
+// DevTools detection - window size difference
+var _dt=function(){
+  if(window.outerWidth-window.innerWidth>160||window.outerHeight-window.innerHeight>160){
+    document.body.innerHTML='<div style="background:#05070F;color:#00F5A0;font-family:monospace;display:flex;align-items:center;justify-content:center;height:100vh;font-size:2rem;letter-spacing:4px;">ACCESS DENIED</div>';
+  }
+};
+setInterval(_dt,800);
+// Disable right-click on images
+window.addEventListener('load',function(){
+  document.querySelectorAll('img').forEach(function(i){
+    i.setAttribute('oncontextmenu','return false;');
+    i.setAttribute('draggable','false');
+  });
+});
+// No-print CSS injection
+var ns=document.createElement('style');
+ns.textContent='@media print{body{display:none!important;}}*{-webkit-user-select:none!important;-moz-user-select:none!important;user-select:none!important;}';
+document.head.appendChild(ns);
+})();
+</script><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Krixels — 2 Player Games</title><link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/><style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
@@ -246,186 +277,21 @@
     }
   </style>
 </head>
-<body>
-  <div class="bg-grid"></div>
-  <div class="bg-orbs">
-    <div class="orb orb1"></div>
-    <div class="orb orb2"></div>
-  </div>
-
-  <!-- NAV -->
-  <nav>
-    <a class="logo" href="../index.html">KRIXELS</a>
-    <div style="display:flex;align-items:center;gap:1.5rem;">
-      <a class="nav-back" href="../index.html">← Back to Modes</a>
-      <div class="nav-badge-2p">● 2 PLAYER</div>
-    </div>
-  </nav>
-
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-badge">
-      <span class="live-dot"></span>
+<body><div class="bg-grid"></div><div class="bg-orbs"><div class="orb orb1"></div><div class="orb orb2"></div></div><nav><a class="logo" href="../index.html">KRIXELS</a><div style="display:flex;align-items:center;gap:1.5rem;"><a class="nav-back" href="../index.html">← Back to Modes</a><div class="nav-badge-2p">● 2 PLAYER</div></div></nav><section class="hero"><div class="hero-badge"><span class="live-dot"></span>
       Live Now — 2 Player Mode
-    </div>
-    <div class="hero-num">2P</div>
-    <h1 class="hero-title">TWO PLAYER GAMES</h1>
-    <p class="hero-desc">
+    </div><div class="hero-num">2P</div><h1 class="hero-title">TWO PLAYER GAMES</h1><p class="hero-desc">
       Apne dost ke saath same device pe baari baari khelo. 1 vs 1 — sirf ek winner.
-    </p>
-  </section>
-
-  <div class="divider">
-    <div class="div-line"></div>
-    <div class="div-text">SELECT GAME</div>
-    <div class="div-line"></div>
-  </div>
-
-  <!-- GAMES -->
-  <main class="section">
-    <div class="games-grid">
-
-      <!-- 1. THROW GAME — LIVE -->
-      <a class="game-card live" href="throw-game/index.html">
-        <div class="glow-top glow-green"></div>
-        <div class="card-thumb thumb-throw">
-          <div class="thumb-glow" style="background:var(--accent)"></div>
-          <span class="thumb-emoji">🎯</span>
-        </div>
-        <div class="card-body">
-          <div class="card-top">
-            <div class="card-title">KRIXELS THROW</div>
-            <span class="status-live">● LIVE</span>
-          </div>
-          <p class="card-desc">
+    </p></section><div class="divider"><div class="div-line"></div><div class="div-text">SELECT GAME</div><div class="div-line"></div></div><main class="section"><div class="games-grid"><a class="game-card live" href="throw-game/index.html"><div class="glow-top glow-green"></div><div class="card-thumb thumb-throw"><div class="thumb-glow" style="background:var(--accent)"></div><span class="thumb-emoji">🎯</span></div><div class="card-body"><div class="card-top"><div class="card-title">KRIXELS THROW</div><span class="status-live">● LIVE</span></div><p class="card-desc">
             Baari baari throw karo! Power aur angle set karo aur target pe nishana lagao. Zyada accurate throw — zyada points. Koi jeete!
-          </p>
-          <div class="card-footer">
-            <div class="card-meta">🏆 Best of 5 Rounds</div>
-            <a class="btn-play btn-active" href="throw-game/index.html">PLAY NOW</a>
-          </div>
-        </div>
-      </a>
-
-      <!-- 2. TIC TAC TOE — LIVE -->
-      <a class="game-card live" href="tictactoe/index.html">
-        <div class="glow-top glow-purple"></div>
-        <div class="card-thumb thumb-ttt">
-          <div class="thumb-glow" style="background:var(--purple)"></div>
-          <span class="thumb-emoji">⭕</span>
-        </div>
-        <div class="card-body">
-          <div class="card-top">
-            <div class="card-title">KRIXELS TTT</div>
-            <span class="status-live">● LIVE</span>
-          </div>
-          <p class="card-desc">
+          </p><div class="card-footer"><div class="card-meta">🏆 Best of 5 Rounds</div><a class="btn-play btn-active" href="throw-game/index.html">PLAY NOW</a></div></div></a><a class="game-card live" href="tictactoe/index.html"><div class="glow-top glow-purple"></div><div class="card-thumb thumb-ttt"><div class="thumb-glow" style="background:var(--purple)"></div><span class="thumb-emoji">⭕</span></div><div class="card-body"><div class="card-top"><div class="card-title">KRIXELS TTT</div><span class="status-live">● LIVE</span></div><p class="card-desc">
             Classic X aur O — Krixels style mein! Teen in a row banao aur dushman ko rokne ki koshish karo. Simple lekin deadly!
-          </p>
-          <div class="card-footer">
-            <div class="card-meta">♾️ Unlimited Rounds</div>
-            <a class="btn-play btn-active" href="tictactoe/index.html">PLAY NOW</a>
-          </div>
-        </div>
-      </a>
-
-      <!-- 3. ARCHERY — COMING SOON -->
-      <div class="game-card soon" style="position:relative;">
-        <div class="lock-chip">🔒</div>
-        <div class="glow-top glow-green" style="background:linear-gradient(90deg,transparent,var(--orange),transparent)"></div>
-        <div class="card-thumb thumb-archery">
-          <div class="thumb-glow" style="background:var(--orange)"></div>
-          <span class="thumb-emoji">🏹</span>
-        </div>
-        <div class="card-body">
-          <div class="card-top">
-            <div class="card-title">ARCHERY DUEL</div>
-            <span class="status-soon">SOON</span>
-          </div>
-          <p class="card-desc">
+          </p><div class="card-footer"><div class="card-meta">♾️ Unlimited Rounds</div><a class="btn-play btn-active" href="tictactoe/index.html">PLAY NOW</a></div></div></a><div class="game-card soon" style="position:relative;"><div class="lock-chip">🔒</div><div class="glow-top glow-green" style="background:linear-gradient(90deg,transparent,var(--orange),transparent)"></div><div class="card-thumb thumb-archery"><div class="thumb-glow" style="background:var(--orange)"></div><span class="thumb-emoji">🏹</span></div><div class="card-body"><div class="card-top"><div class="card-title">ARCHERY DUEL</div><span class="status-soon">SOON</span></div><p class="card-desc">
             Wind aur distance ka hisaab lagao. Perfect aim se target hit karo. Wind ka direction har round mein badlega — tum ready ho?
-          </p>
-          <div class="card-footer">
-            <div class="card-meta">🎯 Precision Shooting</div>
-            <button class="btn-play btn-disabled">LOCKED</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 4. DARTS — COMING SOON -->
-      <div class="game-card soon" style="position:relative;">
-        <div class="lock-chip">🔒</div>
-        <div class="glow-top glow-pink"></div>
-        <div class="card-thumb thumb-darts">
-          <div class="thumb-glow" style="background:var(--pink)"></div>
-          <span class="thumb-emoji">🎳</span>
-        </div>
-        <div class="card-body">
-          <div class="card-top">
-            <div class="card-title">DARTS BATTLE</div>
-            <span class="status-soon">SOON</span>
-          </div>
-          <p class="card-desc">
+          </p><div class="card-footer"><div class="card-meta">🎯 Precision Shooting</div><button class="btn-play btn-disabled">LOCKED</button></div></div></div><div class="game-card soon" style="position:relative;"><div class="lock-chip">🔒</div><div class="glow-top glow-pink"></div><div class="card-thumb thumb-darts"><div class="thumb-glow" style="background:var(--pink)"></div><span class="thumb-emoji">🎳</span></div><div class="card-body"><div class="card-top"><div class="card-title">DARTS BATTLE</div><span class="status-soon">SOON</span></div><p class="card-desc">
             501 se start karo, zero pe khatam karo. Bullseye pe nishana lagao aur dushman se pehle finish karo. Classic pub game!
-          </p>
-          <div class="card-footer">
-            <div class="card-meta">🎯 501 → 0 Format</div>
-            <button class="btn-play btn-disabled">LOCKED</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 5. PENALTY SHOOTOUT -->
-      <div class="game-card soon" style="position:relative;">
-        <div class="lock-chip">🔒</div>
-        <div class="glow-top glow-blue"></div>
-        <div class="card-thumb thumb-penalty">
-          <div class="thumb-glow" style="background:var(--accent2)"></div>
-          <span class="thumb-emoji">⚽</span>
-        </div>
-        <div class="card-body">
-          <div class="card-top">
-            <div class="card-title">PENALTY DUEL</div>
-            <span class="status-soon">SOON</span>
-          </div>
-          <p class="card-desc">
+          </p><div class="card-footer"><div class="card-meta">🎯 501 → 0 Format</div><button class="btn-play btn-disabled">LOCKED</button></div></div></div><div class="game-card soon" style="position:relative;"><div class="lock-chip">🔒</div><div class="glow-top glow-blue"></div><div class="card-thumb thumb-penalty"><div class="thumb-glow" style="background:var(--accent2)"></div><span class="thumb-emoji">⚽</span></div><div class="card-body"><div class="card-top"><div class="card-title">PENALTY DUEL</div><span class="status-soon">SOON</span></div><p class="card-desc">
             Ek shoot karta hai, ek goalkeeper! Baari baari role badalte rehna. Best of 5 penalty shootout — nerves of steel chahiye.
-          </p>
-          <div class="card-footer">
-            <div class="card-meta">⚽ Best of 5 Penalties</div>
-            <button class="btn-play btn-disabled">LOCKED</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 6. COMING SOON TEASER -->
-      <div class="game-card soon" style="position:relative;">
-        <div class="lock-chip">🔒</div>
-        <div class="glow-top" style="background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent)"></div>
-        <div class="card-thumb thumb-coming">
-          <span style="font-family:'Orbitron',monospace;font-size:1rem;letter-spacing:4px;color:var(--muted);position:relative;z-index:1">MYSTERY GAME</span>
-        </div>
-        <div class="card-body">
-          <div class="card-top">
-            <div class="card-title">??? COMING</div>
-            <span class="status-soon">SOON</span>
-          </div>
-          <p class="card-desc">
+          </p><div class="card-footer"><div class="card-meta">⚽ Best of 5 Penalties</div><button class="btn-play btn-disabled">LOCKED</button></div></div></div><div class="game-card soon" style="position:relative;"><div class="lock-chip">🔒</div><div class="glow-top" style="background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent)"></div><div class="card-thumb thumb-coming"><span style="font-family:'Orbitron',monospace;font-size:1rem;letter-spacing:4px;color:var(--muted);position:relative;z-index:1">MYSTERY GAME</span></div><div class="card-body"><div class="card-top"><div class="card-title">??? COMING</div><span class="status-soon">SOON</span></div><p class="card-desc">
             Kuch naya aa raha hai Krixels mein. Ek aisa game jo tune pehle kabhi nahi khela. Stay tuned!
-          </p>
-          <div class="card-footer">
-            <div class="card-meta">🤫 Secret Mode</div>
-            <button class="btn-play btn-disabled">LOCKED</button>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </main>
-
-  <footer>
-    <div class="footer-logo">KRIXELS</div>
-    <div class="footer-text">Made with <span>♥</span> — Krixels 2 Player &nbsp;|&nbsp; Aur games <span>coming soon!</span></div>
-  </footer>
-</body>
+          </p><div class="card-footer"><div class="card-meta">🤫 Secret Mode</div><button class="btn-play btn-disabled">LOCKED</button></div></div></div></div></main><footer><div class="footer-logo">KRIXELS</div><div class="footer-text">Made with <span>♥</span> — Krixels 2 Player &nbsp;|&nbsp; Aur games <span>coming soon!</span></div></footer></body>
 </html>

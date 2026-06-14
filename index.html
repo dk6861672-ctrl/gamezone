@@ -1,452 +1,711 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>GameZone — Play & Win</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <title>Krixels — Play Together, Win Together</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0A0E1A;
-      --card-bg: #131929;
-      --card-border: #1e2d4a;
-      --accent: #00FF88;
-      --purple: #7C3AED;
-      --text: #E8EAF0;
-      --muted: #6B7A99;
-      --danger: #FF4C6A;
+      --bg: #05070F;
+      --surface: #0C1120;
+      --surface2: #111827;
+      --border: #1B2744;
+      --accent: #00F5A0;
+      --accent2: #00D4FF;
+      --purple: #8B5CF6;
+      --pink: #F472B6;
+      --orange: #F97316;
+      --yellow: #FBBF24;
+      --text: #F0F4FF;
+      --muted: #5A6A8A;
+      --muted2: #8A9ABF;
     }
+
+    html { scroll-behavior: smooth; }
 
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'Inter', sans-serif;
+      font-family: 'Space Grotesk', sans-serif;
       min-height: 100vh;
       overflow-x: hidden;
     }
 
-    /* ---------- NAVBAR ---------- */
+    /* ---- ANIMATED BG ---- */
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,245,160,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,245,160,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .bg-orbs {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.12;
+      animation: orb-float 12s ease-in-out infinite;
+    }
+    .orb1 { width: 600px; height: 600px; background: var(--purple); top: -200px; left: -100px; animation-delay: 0s; }
+    .orb2 { width: 400px; height: 400px; background: var(--accent); top: 40%; right: -100px; animation-delay: 4s; }
+    .orb3 { width: 500px; height: 500px; background: var(--accent2); bottom: -100px; left: 30%; animation-delay: 8s; }
+    @keyframes orb-float {
+      0%, 100% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-40px) scale(1.05); }
+    }
+
+    /* ---- NAVBAR ---- */
     nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 1.2rem 2.5rem;
-      border-bottom: 1px solid var(--card-border);
-      position: sticky;
-      top: 0;
-      background: rgba(10,14,26,0.92);
-      backdrop-filter: blur(12px);
-      z-index: 100;
+      padding: 1rem 2.5rem;
+      background: rgba(5,7,15,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
     }
-    .nav-logo {
+    .logo {
       font-family: 'Orbitron', monospace;
       font-weight: 900;
-      font-size: 1.4rem;
-      color: var(--accent);
-      letter-spacing: 2px;
+      font-size: 1.5rem;
+      letter-spacing: 3px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
-    .nav-logo span { color: var(--purple); }
-    .nav-links { display: flex; gap: 2rem; }
+    .logo-dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      margin-left: 4px;
+      vertical-align: middle;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+    .nav-links { display: flex; gap: 1.5rem; }
     .nav-links a {
-      color: var(--muted);
+      color: var(--muted2);
       text-decoration: none;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: 500;
       transition: color 0.2s;
     }
     .nav-links a:hover { color: var(--accent); }
-
-    /* ---------- HERO ---------- */
-    .hero {
-      text-align: center;
-      padding: 5rem 2rem 3.5rem;
-      position: relative;
-      overflow: hidden;
-    }
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: -100px; left: 50%;
-      transform: translateX(-50%);
-      width: 600px; height: 600px;
-      background: radial-gradient(circle, rgba(124,58,237,0.18) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .hero-eyebrow {
-      font-family: 'Orbitron', monospace;
+    .nav-badge {
+      padding: 0.35rem 0.9rem;
+      background: rgba(0,245,160,0.1);
+      border: 1px solid rgba(0,245,160,0.3);
+      border-radius: 20px;
       font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent);
+      font-family: 'Orbitron', monospace;
+      letter-spacing: 1px;
+    }
+
+    /* ---- HERO ---- */
+    .hero {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 7rem 2rem 5rem;
+    }
+    .hero-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(139,92,246,0.12);
+      border: 1px solid rgba(139,92,246,0.3);
+      border-radius: 30px;
+      padding: 0.4rem 1.2rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #a78bfa;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+      font-family: 'Orbitron', monospace;
+    }
+    .hero-title {
+      font-family: 'Orbitron', monospace;
+      font-weight: 900;
+      font-size: clamp(3rem, 8vw, 6.5rem);
+      line-height: 1;
+      letter-spacing: -1px;
+      margin-bottom: 0.4rem;
+    }
+    .hero-title .k { color: var(--accent); text-shadow: 0 0 60px rgba(0,245,160,0.5); }
+    .hero-title .rest { color: var(--text); }
+    .hero-sub {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(0.8rem, 2vw, 1rem);
+      color: var(--muted2);
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      margin-bottom: 2.5rem;
+    }
+    .hero-desc {
+      color: var(--muted2);
+      font-size: 1.05rem;
+      max-width: 500px;
+      margin: 0 auto 3.5rem;
+      line-height: 1.8;
+      font-weight: 400;
+    }
+
+    /* ---- STATS BAR ---- */
+    .stats-bar {
+      display: inline-flex;
+      gap: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 5rem;
+    }
+    .stat-item {
+      padding: 1rem 2.5rem;
+      text-align: center;
+      border-right: 1px solid var(--border);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-num {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 4px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* ---- SECTION ---- */
+    .section {
+      position: relative;
+      z-index: 1;
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 0 2rem 6rem;
+    }
+    .section-header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+    .section-eyebrow {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.7rem;
       letter-spacing: 4px;
       color: var(--accent);
       text-transform: uppercase;
-      margin-bottom: 1rem;
+      margin-bottom: 0.8rem;
     }
-    .hero h1 {
+    .section-title {
       font-family: 'Orbitron', monospace;
-      font-size: clamp(2.2rem, 6vw, 4.5rem);
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
       font-weight: 900;
-      line-height: 1.1;
-      margin-bottom: 1.2rem;
-    }
-    .hero h1 .glow {
-      color: var(--accent);
-      text-shadow: 0 0 30px rgba(0,255,136,0.5);
-    }
-    .hero p {
-      color: var(--muted);
-      font-size: 1.05rem;
-      max-width: 480px;
-      margin: 0 auto 2.5rem;
-      line-height: 1.7;
-    }
-    .hero-stats {
-      display: flex;
-      justify-content: center;
-      gap: 3rem;
-      margin-bottom: 0.5rem;
-    }
-    .stat { text-align: center; }
-    .stat-num {
-      font-family: 'Orbitron', monospace;
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: var(--accent);
-    }
-    .stat-label { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
-
-    /* ---------- SECTION ---------- */
-    .section {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 3rem 2rem 5rem;
-    }
-    .section-header {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 2.5rem;
-    }
-    .section-header h2 {
-      font-family: 'Orbitron', monospace;
-      font-size: 1.1rem;
-      font-weight: 700;
       letter-spacing: 1px;
     }
-    .section-line {
-      flex: 1;
-      height: 1px;
-      background: linear-gradient(to right, var(--card-border), transparent);
-    }
-    .section-badge {
-      font-size: 0.7rem;
-      font-weight: 600;
-      padding: 3px 10px;
-      border-radius: 20px;
-      background: rgba(0,255,136,0.12);
-      color: var(--accent);
-      border: 1px solid rgba(0,255,136,0.3);
-      letter-spacing: 1px;
-    }
+    .section-title span { color: var(--accent2); }
 
-    /* ---------- GAME GRID ---------- */
-    .game-grid {
+    /* ---- PLAYER CARDS GRID ---- */
+    .player-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
       gap: 1.5rem;
     }
 
-    /* ---------- GAME CARD ---------- */
-    .game-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      overflow: hidden;
+    /* ---- PLAYER CARD ---- */
+    .player-card {
       position: relative;
-      transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
       cursor: pointer;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s, box-shadow 0.3s;
+      text-decoration: none;
+      display: block;
+      color: inherit;
     }
-    .game-card:hover {
-      transform: translateY(-6px);
+    .player-card:hover {
+      transform: translateY(-8px) scale(1.01);
+    }
+    .player-card.live:hover {
       border-color: var(--accent);
-      box-shadow: 0 0 30px rgba(0,255,136,0.15), 0 10px 40px rgba(0,0,0,0.5);
+      box-shadow: 0 0 0 1px var(--accent), 0 20px 60px rgba(0,245,160,0.2), 0 0 100px rgba(0,245,160,0.08);
     }
-    .game-card.locked:hover {
+    .player-card.soon:hover {
       border-color: var(--purple);
-      box-shadow: 0 0 30px rgba(124,58,237,0.15), 0 10px 40px rgba(0,0,0,0.5);
+      box-shadow: 0 0 0 1px var(--purple), 0 20px 60px rgba(139,92,246,0.2);
     }
-    /* Scanline hover effect */
-    .game-card::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 3px,
-        rgba(0,255,136,0.015) 3px,
-        rgba(0,255,136,0.015) 4px
-      );
-      opacity: 0;
-      transition: opacity 0.3s;
-      border-radius: 16px;
-      pointer-events: none;
-    }
-    .game-card:hover::after { opacity: 1; }
 
+    /* Card glow line at top */
+    .card-glow-line {
+      height: 3px;
+      width: 100%;
+    }
+    .glow-green { background: linear-gradient(90deg, transparent, var(--accent), transparent); }
+    .glow-purple { background: linear-gradient(90deg, transparent, var(--purple), transparent); }
+    .glow-blue { background: linear-gradient(90deg, transparent, var(--accent2), transparent); }
+    .glow-pink { background: linear-gradient(90deg, transparent, var(--pink), transparent); }
+    .glow-orange { background: linear-gradient(90deg, transparent, var(--orange), transparent); }
+
+    /* Card thumb */
     .card-thumb {
-      height: 160px;
+      height: 180px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 4rem;
       position: relative;
       overflow: hidden;
     }
-    .card-thumb-memory { background: linear-gradient(135deg, #0d1f3c, #1a0e3c); }
-    .card-thumb-cricket { background: linear-gradient(135deg, #0d2614, #1a3a0e); }
-    .card-thumb-snake { background: linear-gradient(135deg, #2a0d0d, #3a1a00); }
-    .card-thumb-puzzle { background: linear-gradient(135deg, #1a0d2e, #0d1a3a); }
-    .card-thumb-quiz { background: linear-gradient(135deg, #2a1a00, #3a2a00); }
-    .card-thumb-tictactoe { background: linear-gradient(135deg, #001a2e, #002e2e); }
+    .thumb-2p { background: linear-gradient(135deg, #0a1628 0%, #0d2244 50%, #061832 100%); }
+    .thumb-3p { background: linear-gradient(135deg, #1a0a28 0%, #2d0d44 50%, #160832 100%); }
+    .thumb-4p { background: linear-gradient(135deg, #0a1a28 0%, #0d3344 50%, #061a32 100%); }
+    .thumb-5p { background: linear-gradient(135deg, #280a1a 0%, #440d30 50%, #320818 100%); }
+    .thumb-6p { background: linear-gradient(135deg, #1a200a 0%, #2e3a0d 50%, #181f06 100%); }
 
-    .card-body { padding: 1.3rem 1.4rem 1.4rem; }
-    .card-tags { display: flex; gap: 0.5rem; margin-bottom: 0.8rem; flex-wrap: wrap; }
-    .tag {
-      font-size: 0.68rem;
-      font-weight: 600;
-      padding: 2px 9px;
+    .player-count-display {
+      font-family: 'Orbitron', monospace;
+      font-weight: 900;
+      font-size: 5rem;
+      line-height: 1;
+      position: relative;
+      z-index: 1;
+    }
+    .pc-2 { color: var(--accent); text-shadow: 0 0 60px rgba(0,245,160,0.6); }
+    .pc-3 { color: var(--purple); text-shadow: 0 0 60px rgba(139,92,246,0.6); }
+    .pc-4 { color: var(--accent2); text-shadow: 0 0 60px rgba(0,212,255,0.6); }
+    .pc-5 { color: var(--pink); text-shadow: 0 0 60px rgba(244,114,182,0.6); }
+    .pc-6 { color: var(--yellow); text-shadow: 0 0 60px rgba(251,191,36,0.6); }
+
+    .pc-label {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 3px;
+      color: var(--muted2);
+      text-transform: uppercase;
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    /* floating player icons */
+    .float-icons {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .ficon {
+      position: absolute;
+      font-size: 1.4rem;
+      opacity: 0.25;
+      animation: float-icon 6s ease-in-out infinite;
+    }
+    @keyframes float-icon {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-12px) rotate(10deg); }
+    }
+
+    /* Card body */
+    .card-body {
+      padding: 1.4rem 1.6rem 1.6rem;
+    }
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.7rem;
+    }
+    .card-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .status-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 3px 10px;
       border-radius: 20px;
-      letter-spacing: 0.5px;
-    }
-    .tag-live { background: rgba(0,255,136,0.12); color: var(--accent); border: 1px solid rgba(0,255,136,0.25); }
-    .tag-coming { background: rgba(124,58,237,0.12); color: #a78bfa; border: 1px solid rgba(124,58,237,0.25); }
-    .tag-type { background: rgba(255,255,255,0.05); color: var(--muted); border: 1px solid rgba(255,255,255,0.08); }
-
-    .card-body h3 {
-      font-family: 'Orbitron', monospace;
-      font-size: 1rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      letter-spacing: 0.5px;
-    }
-    .card-body p {
-      font-size: 0.85rem;
-      color: var(--muted);
-      line-height: 1.6;
-      margin-bottom: 1.2rem;
-    }
-    .card-footer { display: flex; align-items: center; justify-content: space-between; }
-    .card-meta { font-size: 0.75rem; color: var(--muted); }
-    .card-meta span { color: var(--accent); font-weight: 600; }
-
-    .btn-play {
-      padding: 0.5rem 1.3rem;
-      border-radius: 8px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      font-family: 'Orbitron', monospace;
       letter-spacing: 1px;
+      font-family: 'Orbitron', monospace;
+    }
+    .badge-live {
+      background: rgba(0,245,160,0.12);
+      color: var(--accent);
+      border: 1px solid rgba(0,245,160,0.3);
+    }
+    .badge-soon {
+      background: rgba(139,92,246,0.12);
+      color: #a78bfa;
+      border: 1px solid rgba(139,92,246,0.25);
+    }
+    .card-desc {
+      font-size: 0.87rem;
+      color: var(--muted2);
+      line-height: 1.7;
+      margin-bottom: 1.3rem;
+    }
+    .card-games-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.4rem;
+    }
+    .game-chip {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.05);
+      color: var(--muted2);
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+    .card-cta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .cta-info {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .btn-enter {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      padding: 0.55rem 1.4rem;
+      border-radius: 10px;
       border: none;
       cursor: pointer;
       transition: all 0.2s;
       text-decoration: none;
       display: inline-block;
     }
-    .btn-play-active {
+    .btn-green {
       background: var(--accent);
-      color: #0A0E1A;
+      color: #05070F;
     }
-    .btn-play-active:hover {
-      background: #00cc70;
-      box-shadow: 0 0 20px rgba(0,255,136,0.4);
+    .btn-green:hover {
+      background: #00ffaa;
+      box-shadow: 0 0 25px rgba(0,245,160,0.5);
+      transform: scale(1.04);
     }
-    .btn-play-locked {
-      background: rgba(124,58,237,0.15);
+    .btn-lock {
+      background: rgba(139,92,246,0.12);
       color: #a78bfa;
-      border: 1px solid rgba(124,58,237,0.3);
+      border: 1px solid rgba(139,92,246,0.3);
     }
-    .btn-play-locked:hover {
-      background: rgba(124,58,237,0.25);
+    .btn-lock:hover {
+      background: rgba(139,92,246,0.22);
     }
 
-    .lock-overlay {
+    /* Lock overlay */
+    .lock-chip {
       position: absolute;
-      top: 12px; right: 12px;
-      width: 32px; height: 32px;
-      background: rgba(10,14,26,0.7);
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.9rem;
+      top: 14px; right: 14px;
+      background: rgba(5,7,15,0.75);
       border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 5px 8px;
+      font-size: 0.85rem;
+      backdrop-filter: blur(6px);
     }
 
-    /* ---------- FOOTER ---------- */
+    /* ---- FOOTER ---- */
     footer {
-      border-top: 1px solid var(--card-border);
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 2rem;
       text-align: center;
-      padding: 2rem;
+    }
+    .footer-logo {
+      font-family: 'Orbitron', monospace;
+      font-weight: 900;
+      font-size: 1.2rem;
+      letter-spacing: 3px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.6rem;
+    }
+    .footer-text {
       font-size: 0.8rem;
       color: var(--muted);
     }
-    footer span { color: var(--accent); }
+    .footer-text span { color: var(--accent); }
 
-    @media (max-width: 600px) {
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 700px) {
       nav { padding: 1rem 1.2rem; }
       .nav-links { display: none; }
-      .hero { padding: 3rem 1.2rem 2.5rem; }
-      .hero-stats { gap: 1.5rem; }
-      .section { padding: 2rem 1.2rem 3rem; }
+      .hero { padding: 4rem 1.2rem 3rem; }
+      .stats-bar { flex-wrap: wrap; border-radius: 12px; }
+      .stat-item { padding: 0.8rem 1.5rem; border-right: none; border-bottom: 1px solid var(--border); }
+      .stat-item:last-child { border-bottom: none; }
+      .section { padding: 0 1.2rem 4rem; }
+      .player-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
+  <div class="bg-grid"></div>
+  <div class="bg-orbs">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+  </div>
 
   <!-- NAVBAR -->
   <nav>
-    <div class="nav-logo">GAME<span>ZONE</span></div>
-    <div class="nav-links">
-      <a href="#">Home</a>
-      <a href="#">Leaderboard</a>
-      <a href="#">About</a>
+    <div class="logo">KRIXELS<span class="logo-dot"></span></div>
+    <div class="nav-right">
+      <div class="nav-links">
+        <a href="#">Home</a>
+        <a href="#">Leaderboard</a>
+        <a href="#">About</a>
+      </div>
+      <div class="nav-badge">BETA</div>
     </div>
   </nav>
 
   <!-- HERO -->
   <section class="hero">
-    <div class="hero-eyebrow">🎮 Your Personal Game Portal</div>
-    <h1>Play. Win.<br><span class="glow">Level Up.</span></h1>
-    <p>Apne banaye huye games ek jagah — koi install nahi, seedha browser mein khelo.</p>
-    <div class="hero-stats">
-      <div class="stat">
-        <div class="stat-num">6</div>
-        <div class="stat-label">Total Games</div>
+    <div class="hero-label">🎮 Multiplayer Gaming Arena</div>
+    <h1 class="hero-title">
+      <span class="k">K</span><span class="rest">RIXELS</span>
+    </h1>
+    <p class="hero-sub">Play Together &nbsp;·&nbsp; Win Together</p>
+    <p class="hero-desc">
+      2 se lekar 6 players tak — apne doston ke saath khelao. Koi install nahi, seedha browser mein. Asli maza, asli competition.
+    </p>
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="stat-num">5</div>
+        <div class="stat-label">Player Modes</div>
       </div>
-      <div class="stat">
-        <div class="stat-num">1</div>
+      <div class="stat-item">
+        <div class="stat-num">6+</div>
+        <div class="stat-label">Games</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">2P</div>
         <div class="stat-label">Live Now</div>
       </div>
-      <div class="stat">
-        <div class="stat-num">5</div>
-        <div class="stat-label">Coming Soon</div>
+      <div class="stat-item">
+        <div class="stat-num">∞</div>
+        <div class="stat-label">Matches</div>
       </div>
     </div>
   </section>
 
-  <!-- GAMES SECTION -->
+  <!-- PLAYER MODE CARDS -->
   <main class="section">
     <div class="section-header">
-      <h2>ALL GAMES</h2>
-      <div class="section-line"></div>
-      <div class="section-badge">6 GAMES</div>
+      <div class="section-eyebrow">Choose Your Arena</div>
+      <h2 class="section-title">PLAYER <span>MODES</span></h2>
     </div>
 
-    <div class="game-grid">
+    <div class="player-grid">
 
-      <!-- 1. MEMORY GAME — LIVE -->
-      <div class="game-card" onclick="window.location.href='memory-game/index.html'">
-        <div class="card-thumb card-thumb-memory">🧠</div>
-        <div class="card-body">
-          <div class="card-tags">
-            <span class="tag tag-live">● LIVE</span>
-            <span class="tag tag-type">Puzzle</span>
-            <span class="tag tag-type">Brain</span>
+      <!-- 2 PLAYER — LIVE -->
+      <a class="player-card live" href="2-player/index.html">
+        <div class="card-glow-line glow-green"></div>
+        <div class="card-thumb thumb-2p">
+          <div class="float-icons">
+            <span class="ficon" style="top:20px;left:25px;animation-delay:0s">🎮</span>
+            <span class="ficon" style="top:30px;right:30px;animation-delay:2s">⚔️</span>
+            <span class="ficon" style="bottom:25px;left:40px;animation-delay:4s">🏆</span>
           </div>
-          <h3>MEMORY GAME</h3>
-          <p>Cards ko flip karo aur matching pairs dhundo. Apni yaaddasht test karo sabse kam moves mein!</p>
-          <div class="card-footer">
-            <div class="card-meta">Best: <span>—</span> moves</div>
-            <a class="btn-play btn-play-active" href="memory-game/index.html">PLAY NOW</a>
+          <div>
+            <div class="player-count-display pc-2">2P</div>
+          </div>
+          <div class="pc-label">2 PLAYERS</div>
+        </div>
+        <div class="card-body">
+          <div class="card-top">
+            <div class="card-title">TWO PLAYER</div>
+            <span class="status-badge badge-live">● LIVE</span>
+          </div>
+          <p class="card-desc">
+            Dost ke saath 1v1 battle! Throw games, strategy games aur bahut kuch. Direct competition — sirf ek winner hoga.
+          </p>
+          <div class="card-games-list">
+            <span class="game-chip">🎯 Throw Game</span>
+            <span class="game-chip">⭕ Tic Tac Toe</span>
+            <span class="game-chip">More coming</span>
+          </div>
+          <div class="card-cta">
+            <div class="cta-info">🟢 Abhi khelo!</div>
+            <span class="btn-enter btn-green">ENTER →</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- 3 PLAYER -->
+      <div class="player-card soon">
+        <div class="lock-chip">🔒</div>
+        <div class="card-glow-line glow-purple"></div>
+        <div class="card-thumb thumb-3p">
+          <div class="float-icons">
+            <span class="ficon" style="top:20px;left:20px;animation-delay:1s">🎲</span>
+            <span class="ficon" style="top:25px;right:25px;animation-delay:3s">🔥</span>
+            <span class="ficon" style="bottom:20px;left:50%;animation-delay:5s">⚡</span>
+          </div>
+          <div class="player-count-display pc-3">3P</div>
+          <div class="pc-label">3 PLAYERS</div>
+        </div>
+        <div class="card-body">
+          <div class="card-top">
+            <div class="card-title">THREE PLAYER</div>
+            <span class="status-badge badge-soon">SOON</span>
+          </div>
+          <p class="card-desc">
+            Teen players, teen strategies! Jab teen log khelte hain toh alliances banti hain, betrayal hota hai — asli game start hota hai.
+          </p>
+          <div class="card-games-list">
+            <span class="game-chip">🎯 Triple Throw</span>
+            <span class="game-chip">🧩 3P Puzzle</span>
+            <span class="game-chip">Coming Soon</span>
+          </div>
+          <div class="card-cta">
+            <div class="cta-info">🔜 Jaldi aa raha hai</div>
+            <button class="btn-enter btn-lock">LOCKED</button>
           </div>
         </div>
       </div>
 
-      <!-- 2. CRICKET GAME -->
-      <div class="game-card locked">
-        <div class="lock-overlay">🔒</div>
-        <div class="card-thumb card-thumb-cricket">🏏</div>
-        <div class="card-body">
-          <div class="card-tags">
-            <span class="tag tag-coming">COMING SOON</span>
-            <span class="tag tag-type">Sports</span>
+      <!-- 4 PLAYER -->
+      <div class="player-card soon">
+        <div class="lock-chip">🔒</div>
+        <div class="card-glow-line glow-blue"></div>
+        <div class="card-thumb thumb-4p">
+          <div class="float-icons">
+            <span class="ficon" style="top:15px;left:20px;animation-delay:0.5s">🏅</span>
+            <span class="ficon" style="top:20px;right:20px;animation-delay:2.5s">🎮</span>
+            <span class="ficon" style="bottom:20px;left:30px;animation-delay:4.5s">💥</span>
+            <span class="ficon" style="bottom:25px;right:25px;animation-delay:1.5s">🌟</span>
           </div>
-          <h3>CRICKET GAME</h3>
-          <p>Bat karo, sixes maaro! Bowler ki delivery ka timing pakdo aur maximum runs banao.</p>
-          <div class="card-footer">
-            <div class="card-meta">🏆 High Score: <span>—</span></div>
-            <button class="btn-play btn-play-locked">SOON</button>
+          <div class="player-count-display pc-4">4P</div>
+          <div class="pc-label">4 PLAYERS</div>
+        </div>
+        <div class="card-body">
+          <div class="card-top">
+            <div class="card-title">FOUR PLAYER</div>
+            <span class="status-badge badge-soon">SOON</span>
+          </div>
+          <p class="card-desc">
+            Classic 2v2 team battles ya free-for-all! Char doston ke saath party games ka asli maza. Sabse intense matches yahaan hote hain.
+          </p>
+          <div class="card-games-list">
+            <span class="game-chip">🏏 4P Cricket</span>
+            <span class="game-chip">🎲 Board Games</span>
+            <span class="game-chip">Coming Soon</span>
+          </div>
+          <div class="card-cta">
+            <div class="cta-info">🔜 Jaldi aa raha hai</div>
+            <button class="btn-enter btn-lock">LOCKED</button>
           </div>
         </div>
       </div>
 
-      <!-- 3. SNAKE GAME -->
-      <div class="game-card locked">
-        <div class="lock-overlay">🔒</div>
-        <div class="card-thumb card-thumb-snake">🐍</div>
-        <div class="card-body">
-          <div class="card-tags">
-            <span class="tag tag-coming">COMING SOON</span>
-            <span class="tag tag-type">Arcade</span>
+      <!-- 5 PLAYER -->
+      <div class="player-card soon">
+        <div class="lock-chip">🔒</div>
+        <div class="card-glow-line glow-pink"></div>
+        <div class="card-thumb thumb-5p">
+          <div class="float-icons">
+            <span class="ficon" style="top:18px;left:18px;animation-delay:1s">🕹️</span>
+            <span class="ficon" style="top:22px;right:22px;animation-delay:3s">💎</span>
+            <span class="ficon" style="bottom:18px;left:35px;animation-delay:5s">🚀</span>
           </div>
-          <h3>SNAKE GAME</h3>
-          <p>Classic snake game — khana khao, bado, aur khud se bachte raho. Kitna bada ho sakta hai?</p>
-          <div class="card-footer">
-            <div class="card-meta">🏆 High Score: <span>—</span></div>
-            <button class="btn-play btn-play-locked">SOON</button>
+          <div class="player-count-display pc-5">5P</div>
+          <div class="pc-label">5 PLAYERS</div>
+        </div>
+        <div class="card-body">
+          <div class="card-top">
+            <div class="card-title">FIVE PLAYER</div>
+            <span class="status-badge badge-soon">SOON</span>
+          </div>
+          <p class="card-desc">
+            Pach logon ka chaos! Asymmetric gameplay jahan sabka role alag hota hai. 1 vs 4 ya free-for-all — tu decide kar.
+          </p>
+          <div class="card-games-list">
+            <span class="game-chip">🎯 Hunt Mode</span>
+            <span class="game-chip">🧠 Mind Games</span>
+            <span class="game-chip">Coming Soon</span>
+          </div>
+          <div class="card-cta">
+            <div class="cta-info">🔜 Jaldi aa raha hai</div>
+            <button class="btn-enter btn-lock">LOCKED</button>
           </div>
         </div>
       </div>
 
-      <!-- 4. PUZZLE GAME -->
-      <div class="game-card locked">
-        <div class="lock-overlay">🔒</div>
-        <div class="card-thumb card-thumb-puzzle">🧩</div>
-        <div class="card-body">
-          <div class="card-tags">
-            <span class="tag tag-coming">COMING SOON</span>
-            <span class="tag tag-type">Puzzle</span>
+      <!-- 6 PLAYER -->
+      <div class="player-card soon">
+        <div class="lock-chip">🔒</div>
+        <div class="card-glow-line glow-green" style="background: linear-gradient(90deg, transparent, var(--yellow), transparent);"></div>
+        <div class="card-thumb thumb-6p">
+          <div class="float-icons">
+            <span class="ficon" style="top:15px;left:15px;animation-delay:0s">👑</span>
+            <span class="ficon" style="top:18px;right:18px;animation-delay:2s">🌍</span>
+            <span class="ficon" style="bottom:15px;left:40%;animation-delay:4s">⚡</span>
           </div>
-          <h3>SLIDE PUZZLE</h3>
-          <p>Tiles ko slide karo aur picture complete karo. Jitna kam moves utna zyada score!</p>
-          <div class="card-footer">
-            <div class="card-meta">Best: <span>—</span> moves</div>
-            <button class="btn-play btn-play-locked">SOON</button>
-          </div>
+          <div class="player-count-display pc-6">6P</div>
+          <div class="pc-label">6 PLAYERS</div>
         </div>
-      </div>
-
-      <!-- 5. QUIZ GAME -->
-      <div class="game-card locked">
-        <div class="lock-overlay">🔒</div>
-        <div class="card-thumb card-thumb-quiz">❓</div>
         <div class="card-body">
-          <div class="card-tags">
-            <span class="tag tag-coming">COMING SOON</span>
-            <span class="tag tag-type">Trivia</span>
+          <div class="card-top">
+            <div class="card-title">SIX PLAYER</div>
+            <span class="status-badge badge-soon">SOON</span>
           </div>
-          <h3>QUIZ MASTER</h3>
-          <p>GK, Science, Cricket — alag alag topics ke sawal. Kitne sahi jawab de sakte ho?</p>
-          <div class="card-footer">
-            <div class="card-meta">Best: <span>—</span> / 10</div>
-            <button class="btn-play btn-play-locked">SOON</button>
+          <p class="card-desc">
+            Sabse bada battle! Cha logon ka mega tournament — do teams, ya har koi apne liye. Krixels ka ultimate challenge yahaan hai.
+          </p>
+          <div class="card-games-list">
+            <span class="game-chip">🏆 Tournament</span>
+            <span class="game-chip">⚔️ Team Wars</span>
+            <span class="game-chip">Coming Soon</span>
           </div>
-        </div>
-      </div>
-
-      <!-- 6. TIC TAC TOE -->
-      <div class="game-card locked">
-        <div class="lock-overlay">🔒</div>
-        <div class="card-thumb card-thumb-tictactoe">⭕</div>
-        <div class="card-body">
-          <div class="card-tags">
-            <span class="tag tag-coming">COMING SOON</span>
-            <span class="tag tag-type">2 Player</span>
-          </div>
-          <h3>TIC TAC TOE</h3>
-          <p>Classic X aur O ka game. Dost ke saath khelo ya AI se ladon — kaun jeetega?</p>
-          <div class="card-footer">
-            <div class="card-meta">W/L: <span>—</span></div>
-            <button class="btn-play btn-play-locked">SOON</button>
+          <div class="card-cta">
+            <div class="cta-info">🔜 Jaldi aa raha hai</div>
+            <button class="btn-enter btn-lock">LOCKED</button>
           </div>
         </div>
       </div>
@@ -456,7 +715,8 @@
 
   <!-- FOOTER -->
   <footer>
-    Made with <span>♥</span> — GameZone v1.0 &nbsp;|&nbsp; Aur games <span>coming soon!</span>
+    <div class="footer-logo">KRIXELS</div>
+    <div class="footer-text">Made with <span>♥</span> — Krixels v1.0 &nbsp;|&nbsp; Aur modes <span>coming soon!</span></div>
   </footer>
 
 </body>

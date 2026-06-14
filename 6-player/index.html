@@ -2,9 +2,7 @@
 <html lang="en">
 <head><meta name="robots" content="noindex,nofollow"/><meta http-equiv="Cache-Control" content="no-store"/><script>
 (function(){
-// Right-click block
 document.addEventListener('contextmenu',function(e){e.preventDefault();return false;});
-// Key combos block
 document.addEventListener('keydown',function(e){
   var b=e.key;
   if(b==='F12'){e.preventDefault();e.stopPropagation();return false;}
@@ -12,68 +10,146 @@ document.addEventListener('keydown',function(e){
   if(e.ctrlKey&&('uUsS'.indexOf(b)!==-1)){e.preventDefault();return false;}
   if(e.ctrlKey&&e.altKey){e.preventDefault();return false;}
 });
-// Disable text selection
 document.addEventListener('selectstart',function(e){e.preventDefault();});
 document.addEventListener('dragstart',function(e){e.preventDefault();});
-// Disable copy paste
 document.addEventListener('copy',function(e){e.preventDefault();});
-// DevTools detection - window size difference
 var _dt=function(){
   if(window.outerWidth-window.innerWidth>160||window.outerHeight-window.innerHeight>160){
     document.body.innerHTML='<div style="background:#05070F;color:#00F5A0;font-family:monospace;display:flex;align-items:center;justify-content:center;height:100vh;font-size:2rem;letter-spacing:4px;">ACCESS DENIED</div>';
   }
 };
 setInterval(_dt,800);
-// Disable right-click on images
 window.addEventListener('load',function(){
   document.querySelectorAll('img').forEach(function(i){
     i.setAttribute('oncontextmenu','return false;');
     i.setAttribute('draggable','false');
   });
 });
-// No-print CSS injection
 var ns=document.createElement('style');
 ns.textContent='@media print{body{display:none!important;}}*{-webkit-user-select:none!important;-moz-user-select:none!important;user-select:none!important;}';
 document.head.appendChild(ns);
 })();
 </script><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Krixels — 6 Player Games</title><link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/><style>
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #05070F; --surface: #0C1120; --border: #1B2744;
-      --accent: #00F5A0; --accent2: #00D4FF; --yellow: #FBBF24;
+      --bg: #05070F; --surface: #0C1120; --surface2: #111827; --border: #1B2744;
+      --accent: #00F5A0; --accent2: #00D4FF; --purple: #8B5CF6;
+      --pink: #F472B6; --yellow: #FBBF24; --orange: #F97316;
       --text: #F0F4FF; --muted: #5A6A8A; --muted2: #8A9ABF;
     }
     body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
     .bg-grid { position: fixed; inset: 0; background-image: linear-gradient(rgba(0,245,160,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,245,160,0.03) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; z-index: 0; }
-    .bg-orb { position: fixed; width: 500px; height: 500px; background: var(--yellow); border-radius: 50%; filter: blur(150px); opacity: 0.04; top: 50%; left: 50%; transform: translate(-50%,-50%); pointer-events: none; z-index: 0; }
     nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1rem 2.5rem; background: rgba(5,7,15,0.9); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
     .logo { font-family: 'Orbitron', monospace; font-weight: 900; font-size: 1.4rem; letter-spacing: 3px; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-decoration: none; }
     .nav-back { color: var(--muted2); text-decoration: none; font-size: 0.88rem; font-weight: 500; transition: color 0.2s; }
     .nav-back:hover { color: var(--accent); }
-    .live-badge { font-family: 'Orbitron', monospace; font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; padding: 0.3rem 0.8rem; border-radius: 20px; background: rgba(251,191,36,0.1); color: var(--yellow); border: 1px solid rgba(251,191,36,0.3); }
-    .main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 4rem 2rem; position: relative; z-index: 1; }
-    .big-num { font-family: 'Orbitron', monospace; font-weight: 900; font-size: clamp(6rem, 18vw, 12rem); line-height: 1; color: var(--yellow); text-shadow: 0 0 80px rgba(251,191,36,0.4); margin-bottom: 0.5rem; }
-    .title { font-family: 'Orbitron', monospace; font-size: clamp(1.2rem, 3vw, 2rem); font-weight: 900; letter-spacing: 3px; margin-bottom: 1rem; }
-    .desc { color: var(--muted2); font-size: 1rem; max-width: 480px; line-height: 1.8; margin-bottom: 3rem; }
-    .games-box { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 2rem 2.5rem; max-width: 480px; width: 100%; }
-    .games-label { font-family: 'Orbitron', monospace; font-size: 0.65rem; letter-spacing: 3px; color: var(--muted); margin-bottom: 1.2rem; text-transform: uppercase; }
-    .game-list { display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 1.8rem; }
-    .game-item { display: flex; align-items: center; gap: 1rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 0.9rem 1.2rem; }
-    .game-icon { font-size: 1.5rem; }
-    .game-info { text-align: left; }
-    .game-name { font-family: 'Orbitron', monospace; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.2rem; }
-    .game-status { font-size: 0.72rem; color: var(--muted2); }
-    .game-status.live { color: var(--yellow); }
-    .back-btn { display: inline-block; font-family: 'Orbitron', monospace; font-size: 0.78rem; font-weight: 700; letter-spacing: 1.5px; padding: 0.7rem 1.8rem; border-radius: 10px; background: var(--accent); color: #05070F; text-decoration: none; transition: all 0.2s; margin-right: 0.8rem; }
-    .back-btn:hover { background: #00ffaa; box-shadow: 0 0 20px rgba(0,245,160,0.4); }
-    .modes-btn { display: inline-block; font-family: 'Orbitron', monospace; font-size: 0.78rem; font-weight: 700; letter-spacing: 1.5px; padding: 0.7rem 1.8rem; border-radius: 10px; background: transparent; color: var(--muted2); border: 1px solid var(--border); text-decoration: none; transition: all 0.2s; }
-    .modes-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .live-badge { font-family: 'Orbitron', monospace; font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; padding: 0.3rem 0.9rem; border-radius: 20px; }
+    .badge-green { background: rgba(0,245,160,0.12); color: var(--accent); border: 1px solid rgba(0,245,160,0.3); }
+    .badge-purple { background: rgba(139,92,246,0.12); color: #a78bfa; border: 1px solid rgba(139,92,246,0.3); }
+    .badge-blue { background: rgba(0,212,255,0.12); color: var(--accent2); border: 1px solid rgba(0,212,255,0.3); }
+    .badge-pink { background: rgba(244,114,182,0.12); color: var(--pink); border: 1px solid rgba(244,114,182,0.3); }
+    .badge-yellow { background: rgba(251,191,36,0.12); color: var(--yellow); border: 1px solid rgba(251,191,36,0.3); }
+    .main { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 3rem 2rem 4rem; position: relative; z-index: 1; }
+    .hero { text-align: center; margin-bottom: 3rem; }
+    .big-num { font-family: 'Orbitron', monospace; font-weight: 900; font-size: clamp(5rem, 14vw, 9rem); line-height: 1; margin-bottom: 0.4rem; }
+    .page-title { font-family: 'Orbitron', monospace; font-size: clamp(1.1rem, 2.5vw, 1.7rem); font-weight: 900; letter-spacing: 3px; margin-bottom: 0.8rem; }
+    .page-desc { color: var(--muted2); font-size: 0.95rem; max-width: 460px; line-height: 1.8; margin: 0 auto; }
+    .section-label { font-family: 'Orbitron', monospace; font-size: 0.65rem; letter-spacing: 4px; color: var(--muted); text-transform: uppercase; margin-bottom: 1.5rem; text-align: center; }
+    .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.2rem; width: 100%; max-width: 1000px; margin-bottom: 2.5rem; }
+    .game-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s; }
+    .game-card:hover { transform: translateY(-5px); }
+    .card-thumb { height: 120px; display: flex; align-items: center; justify-content: center; font-size: 3rem; position: relative; overflow: hidden; }
+    .card-body { padding: 1.1rem 1.3rem 1.3rem; }
+    .card-name { font-family: 'Orbitron', monospace; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 0.4rem; }
+    .card-desc { font-size: 0.8rem; color: var(--muted2); line-height: 1.6; margin-bottom: 0.9rem; }
+    .card-status { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.68rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; font-family: 'Orbitron', monospace; letter-spacing: 0.5px; }
+    .status-soon { background: rgba(139,92,246,0.12); color: #a78bfa; border: 1px solid rgba(139,92,246,0.25); }
+    .status-live { background: rgba(0,245,160,0.12); color: var(--accent); border: 1px solid rgba(0,245,160,0.3); }
+    .btns { display: flex; gap: 0.8rem; flex-wrap: wrap; justify-content: center; }
+    .btn { display: inline-block; font-family: 'Orbitron', monospace; font-size: 0.78rem; font-weight: 700; letter-spacing: 1.5px; padding: 0.65rem 1.6rem; border-radius: 10px; text-decoration: none; transition: all 0.2s; border: none; cursor: pointer; }
+    .btn-primary { background: var(--accent); color: #05070F; }
+    .btn-primary:hover { background: #00ffaa; box-shadow: 0 0 20px rgba(0,245,160,0.4); }
+    .btn-ghost { background: transparent; color: var(--muted2); border: 1px solid var(--border); }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
     footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 2rem; text-align: center; font-size: 0.8rem; color: var(--muted); }
     .fl { font-family: 'Orbitron', monospace; font-weight: 900; font-size: 1.1rem; letter-spacing: 3px; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 0.5rem; }
     footer span { color: var(--accent); }
-  </style>
-</head>
-<body><div class="bg-grid"></div><div class="bg-orb"></div><nav><a class="logo" href="index.html">KRIXELS</a><a class="nav-back" href="index.html">← Player Modes</a><div class="live-badge">● 6P LIVE</div></nav><main class="main"><div class="big-num">6P</div><h1 class="title">6 PLAYER MODE</h1><p class="desc">The biggest battle! Six-player mega tournament — two teams, or everyone for themselves. Krixels' ultimate challenge awaits.</p><div class="games-box"><div class="games-label">Available Games</div><div class="game-list"><div class="game-item"><div class="game-icon">🏆</div><div class="game-info"><div class="game-name">TOURNAMENT MODE</div><div class="game-status live">● Coming Soon</div></div></div><div class="game-item"><div class="game-icon">⚔️</div><div class="game-info"><div class="game-name">TEAM WARS</div><div class="game-status live">● Coming Soon</div></div></div><div class="game-item"><div class="game-icon">👑</div><div class="game-info"><div class="game-name">KING OF THE HILL</div><div class="game-status live">● Coming Soon</div></div></div></div><a class="back-btn" href="2-player.html">▶ PLAY 2P GAMES</a><a class="modes-btn" href="index.html">ALL MODES</a></div></main><footer><div class="fl">KRIXELS</div>
-    Made with <span>♥</span> — More games <span>coming soon!</span></footer>
+    @media (max-width: 600px) { nav { padding: 1rem 1.2rem; } .games-grid { grid-template-columns: 1fr; } }
+
+    .bg-orb { position: fixed; width: 500px; height: 500px; background: var(--yellow); border-radius: 50%; filter: blur(150px); opacity: 0.06; top: 50%; left: 50%; transform: translate(-50%,-50%); pointer-events: none; z-index: 0; }
+</style></head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-orb"></div>
+<nav>
+  <a class="logo" href="../index.html">KRIXELS</a>
+  <a class="nav-back" href="../index.html">← All Modes</a>
+  <div class="live-badge badge-yellow">● 6P LIVE</div>
+</nav>
+<main class="main">
+  <div class="hero">
+    <div class="big-num" style="color:var(--yellow);text-shadow:0 0 80px rgba(251,191,36,0.4);">6P</div>
+    <h1 class="page-title">6 PLAYER MODE</h1>
+    <p class="page-desc">The biggest battle on Krixels! Six-player mega tournaments — two teams or everyone for themselves. The ultimate challenge awaits.</p>
+  </div>
+  <div class="section-label">Available Games — 6 Player Mode</div>
+  <div class="games-grid">
+
+        <div class="game-card" style="border-color: rgba(251,191,36,0.15);" onmouseover="this.style.borderColor='rgba(251,191,36,0.5)';this.style.boxShadow='0 10px 40px rgba(251,191,36,0.15)'" onmouseout="this.style.borderColor='rgba(251,191,36,0.15)';this.style.boxShadow='none'">
+          <div class="card-thumb" style="background: linear-gradient(135deg, #1a150a, #2e2008);">🏆</div>
+          <div class="card-body">
+            <div class="card-name">TOURNAMENT MODE</div>
+            <div class="card-desc">Six players enter, one champion leaves. Round-robin brackets, knockout rounds, and a grand final — the full tournament experience.</div>
+            <span class="card-status status-soon">⏳ COMING SOON</span>
+          </div>
+        </div>
+        <div class="game-card" style="border-color: rgba(251,191,36,0.15);" onmouseover="this.style.borderColor='rgba(251,191,36,0.5)';this.style.boxShadow='0 10px 40px rgba(251,191,36,0.15)'" onmouseout="this.style.borderColor='rgba(251,191,36,0.15)';this.style.boxShadow='none'">
+          <div class="card-thumb" style="background: linear-gradient(135deg, #0a1210, #0d1f1a);">⚔️</div>
+          <div class="card-body">
+            <div class="card-name">TEAM WARS</div>
+            <div class="card-desc">Three vs Three — the ultimate team battle. Coordinate attacks, defend your base, and destroy the enemy team's core to win.</div>
+            <span class="card-status status-soon">⏳ COMING SOON</span>
+          </div>
+        </div>
+        <div class="game-card" style="border-color: rgba(251,191,36,0.15);" onmouseover="this.style.borderColor='rgba(251,191,36,0.5)';this.style.boxShadow='0 10px 40px rgba(251,191,36,0.15)'" onmouseout="this.style.borderColor='rgba(251,191,36,0.15)';this.style.boxShadow='none'">
+          <div class="card-thumb" style="background: linear-gradient(135deg, #1a1200, #2e1f00);">👑</div>
+          <div class="card-body">
+            <div class="card-name">KING OF THE HILL</div>
+            <div class="card-desc">Claim the hill and hold it against five rivals. Every second on the hill scores points — defend it or lose it.</div>
+            <span class="card-status status-soon">⏳ COMING SOON</span>
+          </div>
+        </div>
+        <div class="game-card" style="border-color: rgba(251,191,36,0.15);" onmouseover="this.style.borderColor='rgba(251,191,36,0.5)';this.style.boxShadow='0 10px 40px rgba(251,191,36,0.15)'" onmouseout="this.style.borderColor='rgba(251,191,36,0.15)';this.style.boxShadow='none'">
+          <div class="card-thumb" style="background: linear-gradient(135deg, #0a0f1a, #0d1a2e);">🌍</div>
+          <div class="card-body">
+            <div class="card-name">WORLD DOMINATION</div>
+            <div class="card-desc">Six players on a global map — conquer territories, build armies, and eliminate rivals until only one empire remains.</div>
+            <span class="card-status status-soon">⏳ COMING SOON</span>
+          </div>
+        </div>
+        <div class="game-card" style="border-color: rgba(251,191,36,0.15);" onmouseover="this.style.borderColor='rgba(251,191,36,0.5)';this.style.boxShadow='0 10px 40px rgba(251,191,36,0.15)'" onmouseout="this.style.borderColor='rgba(251,191,36,0.15)';this.style.boxShadow='none'">
+          <div class="card-thumb" style="background: linear-gradient(135deg, #1a0a12, #2e0d1e);">🎪</div>
+          <div class="card-body">
+            <div class="card-name">PARTY CHAOS</div>
+            <div class="card-desc">Six players, six different mini-games back to back. Accumulate the most wins across all rounds to become the Party Champion.</div>
+            <span class="card-status status-soon">⏳ COMING SOON</span>
+          </div>
+        </div>
+        <div class="game-card" style="border-color: rgba(251,191,36,0.15);" onmouseover="this.style.borderColor='rgba(251,191,36,0.5)';this.style.boxShadow='0 10px 40px rgba(251,191,36,0.15)'" onmouseout="this.style.borderColor='rgba(251,191,36,0.15)';this.style.boxShadow='none'">
+          <div class="card-thumb" style="background: linear-gradient(135deg, #10100a, #1e1e0d);">🔱</div>
+          <div class="card-body">
+            <div class="card-name">ULTIMATE ROYALE</div>
+            <div class="card-desc">Free-for-all chaos — six players, no teams, no mercy. Use every item, trick, and strategy to be the last one standing.</div>
+            <span class="card-status status-soon">⏳ COMING SOON</span>
+          </div>
+        </div>
+  </div>
+  <div class="btns">
+    <a class="btn btn-primary" href="../2-player/index.html">▶ Play 2P Games</a>
+    <a class="btn btn-ghost" href="../index.html">← All Modes</a>
+  </div>
+</main>
+<footer><div class="fl">KRIXELS</div>Made with <span>♥</span> — More games <span>coming soon!</span></footer>
 </body>
 </html>

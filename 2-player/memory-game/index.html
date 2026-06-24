@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Krixel — Memory Match</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --p1: #3b82f6;
+    --p2: #ef4444;
+    --board: #0f1020;
+    --card-back: #fdb022;
+    --card-back-shade: #c98500;
+    --cream: #fff7ea;
+    --ink: #1c1e33;
+    --accent: #ffffff;
+    --bg-color: #0f1020;
+    --active-color: #3b82f6;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg-color);
+    font-family: 'Quicksand', sans-serif;
+    overflow: hidden;
+    transition: background 0.5s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .app {
+    width: 100vw;
+    height: 100dvh;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ---------- Background overlay ---------- */
+  .bg-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    transition: background 0.6s ease;
+  }
+
+  /* ---------- Player strips (top = P2 rotated, bottom = P1) ---------- */
+  .player-strip {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    position: relative;
+    z-index: 2;
+    height: 68px;
+    transition: background 0.5s ease;
+  }
+
+  .player-strip.p2-strip {
+    transform: rotate(180deg);
+    background: rgba(239, 68, 68, 0.15);
+    border-bottom: 2px solid rgba(239, 68, 68, 0.3);
+  }
+  .player-strip.p1-strip {
+    background: rgba(59, 130, 246, 0.15);
+    border-top: 2px solid rgba(59, 130, 246, 0.3);
+  }
+
+  .player-strip.p2-strip.active-turn {
+    background: rgba(239, 68, 68, 0.35);
+    border-bottom-color: rgba(239, 68, 68, 0.8);
+  }
+  .player-strip.p1-strip.active-turn {
+    background: rgba(59, 130, 246, 0.35);
+    border-top-color: rgba(59, 130, 246, 0.8);
+  }
+
+  .player-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .player-brand {
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 800;
+    font-size: 1.05rem;
+    letter-spacing: 2px;
+    color: #fff;
+    opacity: 0.5;
+    transition: opacity 0.4s;
+  }
+  .active-turn .player-brand {
+    opacity: 1;
+  }
+
+  .player-label {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    transition: color 0.4s;
+  }
+  .p1-strip .player-label { color: var(--p1); opacity: 0.7; }
+  .p2-strip .player-label { color: var(--p2); opacity: 0.7; }
+  .active-turn .player-label {
+    opacity: 1;
+  }
+
+  .turn-text {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.0);
+    letter-spacing: 0.5px;
+    transition: color 0.4s;
+  }
+  .active-turn .turn-text {
+    color: rgba(255,255,255,0.85);
+  }
+
+  .score-display {
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 800;
+    font-size: 2rem;
+    color: #fff;
+    opacity: 0.3;
+    transition: opacity 0.4s, font-size 0.3s;
+    line-height: 1;
+  }
+  .active-turn .score-display {
+    opacity: 1;
+    font-size: 2.2rem;
+  }
+  .p1-strip .score-display { color: var(--p1); }
+  .p2-strip .score-display { color: var(--p2); }
+
+  /* ---------- Board ---------- */
+  .board-wrap {
+    flex: 1;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+  }
+
+  #board {
+    display: grid;
+    gap: 6px;
+    width: 100%;
+    max-width: 420px;
+  }
+
+  /* ---------- Cards ---------- */
+  .card {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    perspective: 600px;
+    aspect-ratio: 1;
+  }
+  .card:disabled { cursor: default; }
+
+  .card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform-style: preserve-3d;
+  }
+  .card.flipped .card-inner { transform: rotateY(180deg); }
+
+  .card-back, .card-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card-back {
+    background: linear-gradient(135deg, #2a2d55, #1f2240);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    box-shadow: 0 3px 0 rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .card-back-label {
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 800;
+    font-size: clamp(0.45rem, 1.8vw, 0.75rem);
+    letter-spacing: 1.5px;
+    color: rgba(255,255,255,0.25);
+    text-align: center;
+    line-height: 1;
+  }
+
+  .card-face {
+    background: var(--cream);
+    border: 1.5px solid rgba(255,255,255,0.3);
+    transform: rotateY(180deg);
+    font-size: clamp(1.1rem, 5vw, 1.8rem);
+    box-shadow: 0 3px 0 rgba(0,0,0,0.3);
+  }
+
+  .card.matched .card-face {
+    box-shadow: 0 0 0 2.5px var(--match-clr, #3b82f6) inset, 0 3px 0 rgba(0,0,0,0.2);
+  }
+  .card.matched .card-back {
+    background: rgba(255,255,255,0.05);
+  }
+
+  /* ---------- Restart button (center) ---------- */
+  .center-btn {
+    position: absolute;
+    bottom: 76px;
+    right: 14px;
+    z-index: 5;
+    background: rgba(255,255,255,0.1);
+    border: 1.5px solid rgba(255,255,255,0.2);
+    color: #fff;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(6px);
+  }
+
+  /* ---------- Win Modal ---------- */
+  .modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(5,6,18,0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    backdrop-filter: blur(4px);
+  }
+  .modal[hidden] { display: none; }
+
+  .modal-card {
+    background: linear-gradient(160deg, #1e2155, #2d1f55);
+    border-radius: 20px;
+    padding: 32px 28px;
+    text-align: center;
+    max-width: 300px;
+    width: 90%;
+    border: 1.5px solid rgba(255,255,255,0.12);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  }
+  .modal-card .krixel-logo {
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 800;
+    font-size: 1.6rem;
+    letter-spacing: 3px;
+    color: #fff;
+    margin-bottom: 14px;
+    display: block;
+  }
+  .modal-card h2 {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 1.3rem;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+  .modal-card p {
+    color: rgba(255,255,255,0.55);
+    font-weight: 600;
+    margin-bottom: 22px;
+  }
+  .modal-card button {
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    background: var(--card-back);
+    color: var(--ink);
+    border: none;
+    padding: 11px 26px;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 var(--card-back-shade);
+  }
+  .modal-card button:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--card-back-shade); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-inner { transition: none !important; }
+    .card.flipped .card-back { display: none; }
+    .card:not(.flipped) .card-face { display: none; }
+    .card-face { transform: none; }
+    html, body, .player-strip { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- P2 strip (top, rotated) -->
+  <div class="player-strip p2-strip" id="p2Strip">
+    <div class="player-left">
+      <div class="player-brand">KRIXEL</div>
+      <div class="player-label">Player 2</div>
+      <div class="turn-text" id="p2TurnText">now your turn</div>
+    </div>
+    <div class="score-display" id="p2Score">0</div>
+  </div>
+
+  <!-- Board -->
+  <div class="board-wrap">
+    <div id="board"></div>
+  </div>
+
+  <!-- P1 strip (bottom) -->
+  <div class="player-strip p1-strip" id="p1Strip">
+    <div class="player-left">
+      <div class="player-brand">KRIXEL</div>
+      <div class="player-label">Player 1</div>
+      <div class="turn-text" id="p1TurnText">now your turn</div>
+    </div>
+    <div class="score-display" id="p1Score">0</div>
+  </div>
+
+  <button class="center-btn" id="restartBtn" aria-label="Restart">⟲</button>
+</div>
+
+<div class="modal" id="winModal" hidden>
+  <div class="modal-card">
+    <span class="krixel-logo">KRIXEL</span>
+    <h2 id="winTitle">Player 1 Wins!</h2>
+    <p id="winScores">7 — 4</p>
+    <button id="playAgainBtn">Play Again</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const ICONS = ['🎮','🎯','🎨','🎵','🎲','🚀','⭐','🔥','💎','🍕','🦄','🌈'];
+  // 22 cards = 11 pairs in 4 rows of ~5-6
+  // We'll do 4 rows: 6,6,5,5 = 22 cards
+  const GRID_COLS = 4;
+  const TOTAL_PAIRS = 12; // 24 cards total
+
+  const boardEl   = document.getElementById('board');
+  const p1Score   = document.getElementById('p1Score');
+  const p2Score   = document.getElementById('p2Score');
+  const p1Strip   = document.getElementById('p1Strip');
+  const p2Strip   = document.getElementById('p2Strip');
+  const p1TurnTxt = document.getElementById('p1TurnText');
+  const p2TurnTxt = document.getElementById('p2TurnText');
+  const restartBtn= document.getElementById('restartBtn');
+  const winModal  = document.getElementById('winModal');
+  const winTitle  = document.getElementById('winTitle');
+  const winScores = document.getElementById('winScores');
+  const playAgainBtn = document.getElementById('playAgainBtn');
+
+  let cards = [], firstPick = null, secondPick = null;
+  let lock = false, currentPlayer = 1;
+  let scores = {1:0, 2:0}, matchedCount = 0;
+
+  function calcGrid() {
+    const boardWrap = document.querySelector('.board-wrap');
+    const w = boardWrap.clientWidth - 16;
+    const h = boardWrap.clientHeight - 16;
+    const totalCards = TOTAL_PAIRS * 2; // 24
+    let bestCols = 4, bestSize = 0;
+    for (let c = 3; c <= 6; c++) {
+      const r = Math.ceil(totalCards / c);
+      const cardW = (w - (c-1)*6) / c;
+      const cardH = (h - (r-1)*6) / r;
+      const sz = Math.min(cardW, cardH);
+      if (sz > bestSize) { bestSize = sz; bestCols = c; }
+    }
+    return { cols: bestCols };
+  }
+
+  function shuffle(arr){
+    for(let i = arr.length-1; i>0; i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [arr[i],arr[j]] = [arr[j],arr[i]];
+    }
+    return arr;
+  }
+
+  function buildDeck(){
+    const icons = shuffle([...ICONS]).slice(0, TOTAL_PAIRS);
+    let deck = [];
+    icons.forEach((icon, idx) => {
+      deck.push({icon, pairId: idx});
+      deck.push({icon, pairId: idx});
+    });
+    return shuffle(deck).map((c,i) => ({...c, id:i, flipped:false, matched:false, matchedBy:null}));
+  }
+
+  function render(){
+    const {cols} = calcGrid();
+    boardEl.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    boardEl.innerHTML = '';
+    cards.forEach(c => boardEl.appendChild(buildCardEl(c)));
+  }
+
+  function buildCardEl(c){
+    const btn = document.createElement('button');
+    btn.className = 'card' + (c.flipped?' flipped':'') + (c.matched?' matched':'');
+    btn.dataset.id = c.id;
+    if(c.matched) {
+      btn.disabled = true;
+      btn.style.setProperty('--match-clr', c.matchedBy===1 ? '#3b82f6' : '#ef4444');
+    }
+
+    const inner = document.createElement('div');
+    inner.className = 'card-inner';
+
+    const back = document.createElement('div');
+    back.className = 'card-back';
+    const lbl = document.createElement('div');
+    lbl.className = 'card-back-label';
+    lbl.textContent = 'KRIXEL';
+    back.appendChild(lbl);
+
+    const face = document.createElement('div');
+    face.className = 'card-face';
+    face.textContent = c.icon;
+
+    inner.appendChild(back);
+    inner.appendChild(face);
+    btn.appendChild(inner);
+    btn.addEventListener('click', () => onCardClick(c.id));
+    return btn;
+  }
+
+  function onCardClick(id){
+    if(lock) return;
+    const card = cards.find(c => c.id===id);
+    if(!card || card.flipped || card.matched) return;
+
+    card.flipped = true;
+    updateCard(card);
+
+    if(!firstPick){ firstPick = card; return; }
+
+    secondPick = card;
+    lock = true;
+
+    if(firstPick.pairId === secondPick.pairId){
+      firstPick.matched = secondPick.matched = true;
+      firstPick.matchedBy = secondPick.matchedBy = currentPlayer;
+      scores[currentPlayer]++;
+      matchedCount += 2;
+      updateScores();
+      updateCard(firstPick); updateCard(secondPick);
+      firstPick = null; secondPick = null; lock = false;
+      if(matchedCount === cards.length) setTimeout(showWin, 400);
+    } else {
+      setTimeout(()=>{
+        firstPick.flipped = secondPick.flipped = false;
+        updateCard(firstPick); updateCard(secondPick);
+        firstPick = null; secondPick = null; lock = false;
+        switchPlayer();
+      }, 850);
+    }
+  }
+
+  function updateCard(card){
+    const btn = boardEl.querySelector(`[data-id="${card.id}"]`);
+    if(!btn) return;
+    btn.className = 'card' + (card.flipped?' flipped':'') + (card.matched?' matched':'');
+    if(card.matched){
+      btn.disabled = true;
+      btn.style.setProperty('--match-clr', card.matchedBy===1 ? '#3b82f6' : '#ef4444');
+    }
+  }
+
+  function switchPlayer(){
+    currentPlayer = currentPlayer===1 ? 2 : 1;
+    updateTurnUI();
+  }
+
+  function updateTurnUI(){
+    const isP1 = currentPlayer===1;
+    // Strip active classes
+    p1Strip.classList.toggle('active-turn', isP1);
+    p2Strip.classList.toggle('active-turn', !isP1);
+    // Body/bg color
+    document.body.style.background = isP1
+      ? 'linear-gradient(180deg, #0a0f2e 0%, #0f1a3d 100%)'
+      : 'linear-gradient(180deg, #2a0a0a 0%, #1a0505 100%)';
+  }
+
+  function updateScores(){
+    p1Score.textContent = scores[1];
+    p2Score.textContent = scores[2];
+  }
+
+  function showWin(){
+    let title;
+    if(scores[1]===scores[2]) title = "It's a Tie! 🤝";
+    else title = "Player " + (scores[1]>scores[2]?1:2) + " Wins! 🎉";
+    winTitle.textContent = title;
+    winScores.textContent = scores[1] + ' — ' + scores[2];
+    winModal.hidden = false;
+  }
+
+  function newGame(){
+    cards = buildDeck();
+    firstPick=null; secondPick=null; lock=false;
+    currentPlayer=1; scores={1:0,2:0}; matchedCount=0;
+    updateScores(); updateTurnUI();
+    winModal.hidden = true;
+    render();
+  }
+
+  restartBtn.addEventListener('click', newGame);
+  playAgainBtn.addEventListener('click', newGame);
+  window.addEventListener('resize', () => render());
+
+  newGame();
+})();
+</script>
+</body>
+</html>

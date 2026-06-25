@@ -1,23 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta name="robots" content="noindex,nofollow"/>
+<meta http-equiv="Cache-Control" content="no-store"/>
+<script>
+(function(){
+document.addEventListener('contextmenu',function(e){e.preventDefault();return false;});
+document.addEventListener('keydown',function(e){
+  var b=e.key;
+  if(b==='F12'){e.preventDefault();e.stopPropagation();return false;}
+  if(e.ctrlKey&&e.shiftKey&&('iIjJcCkK'.indexOf(b)!==-1)){e.preventDefault();return false;}
+  if(e.ctrlKey&&('uUsS'.indexOf(b)!==-1)){e.preventDefault();return false;}
+  if(e.ctrlKey&&e.altKey){e.preventDefault();return false;}
+});
+document.addEventListener('selectstart',function(e){e.preventDefault();});
+document.addEventListener('dragstart',function(e){e.preventDefault();});
+document.addEventListener('copy',function(e){e.preventDefault();});
+var _dt=function(){
+  if(window.outerWidth-window.innerWidth>160||window.outerHeight-window.innerHeight>160){
+    document.body.innerHTML='<div style="background:#05070F;color:#00F5A0;font-family:monospace;display:flex;align-items:center;justify-content:center;height:100vh;font-size:2rem;letter-spacing:4px;">ACCESS DENIED</div>';
+  }
+};
+setInterval(_dt,800);
+window.addEventListener('load',function(){
+  document.querySelectorAll('img').forEach(function(i){
+    i.setAttribute('oncontextmenu','return false;');
+    i.setAttribute('draggable','false');
+  });
+});
+var ns=document.createElement('style');
+ns.textContent='@media print{body{display:none!important;}}*{-webkit-user-select:none!important;-moz-user-select:none!important;user-select:none!important;}';
+document.head.appendChild(ns);
+})();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Krixel — Memory Match</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Quicksand:wght@500;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --p1: #3b82f6;
-    --p2: #ef4444;
+    --p1: #00F5A0;
+    --p2: #F472B6;
     --board: #0f1020;
-    --card-back: #fdb022;
-    --card-back-shade: #c98500;
     --cream: #fff7ea;
     --ink: #1c1e33;
-    --accent: #ffffff;
-    --bg-color: #0f1020;
-    --active-color: #3b82f6;
+    --bg-color: #05070F;
+    --surface: #0C1120;
+    --surface2: #111827;
+    --border: #1B2744;
+    --purple: #8B5CF6;
+    --pink: #F472B6;
+    --text: #F0F4FF;
+    --muted: #5A6A8A;
+    --muted2: #8A9ABF;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -27,312 +63,402 @@
     background: var(--bg-color);
     font-family: 'Quicksand', sans-serif;
     overflow: hidden;
-    transition: background 0.5s ease;
     -webkit-tap-highlight-color: transparent;
   }
 
+  /* ── SETUP SCREEN ── */
+  #setup-screen {
+    position: fixed; inset: 0; z-index: 50;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 2rem; text-align: center;
+    background: var(--bg-color);
+    overflow-y: auto;
+  }
+  #setup-screen.hidden { display: none; }
+
+  /* BG grid */
+  .bg-grid {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image:
+      linear-gradient(rgba(0,245,160,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,245,160,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .bg-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  .orb { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.08; animation: orb-float 12s ease-in-out infinite; }
+  .orb1 { width: 500px; height: 500px; background: var(--pink); top: -150px; right: -100px; }
+  .orb2 { width: 400px; height: 400px; background: var(--purple); bottom: 0; left: -100px; animation-delay: 6s; }
+  @keyframes orb-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-30px)} }
+
+  .setup-logo {
+    font-family: 'Orbitron', monospace; font-weight: 900; font-size: 1.1rem;
+    letter-spacing: 4px; color: var(--p1); margin-bottom: 1.5rem;
+    position: relative; z-index: 1;
+  }
+  .setup-title {
+    font-family: 'Baloo 2', sans-serif; font-weight: 800;
+    font-size: clamp(2.2rem, 8vw, 4rem); letter-spacing: 3px;
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 0.4rem; line-height: 1.1; position: relative; z-index: 1;
+  }
+  .setup-sub {
+    font-size: 0.85rem; color: var(--muted2); margin-bottom: 2rem;
+    letter-spacing: 2px; position: relative; z-index: 1;
+  }
+
+  .name-inputs {
+    display: flex; gap: 1.2rem; margin-bottom: 2rem;
+    flex-wrap: wrap; justify-content: center; position: relative; z-index: 1;
+  }
+  .player-input-wrap { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+  .player-tag {
+    font-family: 'Orbitron', monospace; font-size: 0.65rem; font-weight: 700;
+    letter-spacing: 2px; padding: 0.25rem 0.9rem; border-radius: 20px;
+  }
+  .p1-tag { background: rgba(0,245,160,0.1); color: var(--p1); border: 1px solid rgba(0,245,160,0.3); }
+  .p2-tag { background: rgba(244,114,182,0.1); color: var(--p2); border: 1px solid rgba(244,114,182,0.3); }
+  .player-input {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 0.75rem 1.1rem;
+    color: var(--text); font-family: 'Quicksand', sans-serif;
+    font-size: 0.95rem; font-weight: 600; text-align: center; width: 180px;
+    outline: none; transition: border-color 0.2s;
+  }
+  .player-input.p1:focus { border-color: rgba(0,245,160,0.5); }
+  .player-input.p2:focus { border-color: rgba(244,114,182,0.5); }
+
+  .grid-select-label {
+    font-family: 'Orbitron', monospace; font-size: 0.65rem; letter-spacing: 2px;
+    color: var(--muted2); margin-bottom: 0.8rem; position: relative; z-index: 1;
+  }
+  .grid-options {
+    display: flex; gap: 0.8rem; margin-bottom: 2rem;
+    flex-wrap: wrap; justify-content: center; position: relative; z-index: 1;
+  }
+  .grid-opt {
+    padding: 0.6rem 1.3rem; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--muted2); font-family: 'Orbitron', monospace;
+    font-size: 0.7rem; font-weight: 700; cursor: pointer;
+    transition: all 0.2s; letter-spacing: 1px;
+  }
+  .grid-opt:hover { border-color: var(--purple); color: #a78bfa; }
+  .grid-opt.selected { background: rgba(244,114,182,0.1); border-color: var(--pink); color: var(--pink); }
+
+  .btn-start {
+    font-family: 'Orbitron', monospace; font-size: 0.85rem; font-weight: 700;
+    letter-spacing: 2px; padding: 0.9rem 2.5rem; border-radius: 12px;
+    border: none; cursor: pointer;
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    color: white; transition: all 0.2s;
+    box-shadow: 0 0 30px rgba(244,114,182,0.25);
+    position: relative; z-index: 1;
+  }
+  .btn-start:hover { transform: translateY(-2px); box-shadow: 0 0 50px rgba(244,114,182,0.4); }
+
+  /* ── GAME SCREEN ── */
   .app {
-    width: 100vw;
-    height: 100dvh;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    overflow: hidden;
+    width: 100vw; height: 100dvh; height: 100vh;
+    display: flex; flex-direction: column;
+    position: relative; overflow: hidden;
   }
 
-  /* ---------- Background overlay ---------- */
-  .bg-overlay {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    transition: background 0.6s ease;
-  }
-
-  /* ---------- Player strips (top = P2 rotated, bottom = P1) ---------- */
+  /* Player strips */
   .player-strip {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 16px;
-    position: relative;
-    z-index: 2;
-    height: 68px;
-    transition: background 0.5s ease;
+    flex-shrink: 0; display: flex; align-items: center;
+    justify-content: space-between; padding: 6px 14px;
+    position: relative; z-index: 2; height: 64px;
+    transition: background 0.4s ease;
   }
-
   .player-strip.p2-strip {
     transform: rotate(180deg);
-    background: rgba(239, 68, 68, 0.15);
-    border-bottom: 2px solid rgba(239, 68, 68, 0.3);
+    background: rgba(244,114,182,0.12);
+    border-bottom: 2px solid rgba(244,114,182,0.25);
   }
   .player-strip.p1-strip {
-    background: rgba(59, 130, 246, 0.15);
-    border-top: 2px solid rgba(59, 130, 246, 0.3);
+    background: rgba(0,245,160,0.12);
+    border-top: 2px solid rgba(0,245,160,0.25);
   }
-
   .player-strip.p2-strip.active-turn {
-    background: rgba(239, 68, 68, 0.35);
-    border-bottom-color: rgba(239, 68, 68, 0.8);
+    background: rgba(244,114,182,0.28);
+    border-bottom-color: rgba(244,114,182,0.7);
   }
   .player-strip.p1-strip.active-turn {
-    background: rgba(59, 130, 246, 0.35);
-    border-top-color: rgba(59, 130, 246, 0.8);
+    background: rgba(0,245,160,0.22);
+    border-top-color: rgba(0,245,160,0.7);
   }
 
-  .player-left {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
+  .player-left { display: flex; flex-direction: column; gap: 1px; }
   .player-brand {
-    font-family: 'Baloo 2', sans-serif;
-    font-weight: 800;
-    font-size: 1.05rem;
-    letter-spacing: 2px;
-    color: #fff;
-    opacity: 0.5;
-    transition: opacity 0.4s;
+    font-family: 'Orbitron', monospace; font-weight: 900;
+    font-size: 0.75rem; letter-spacing: 3px; color: #fff;
+    opacity: 0.4; transition: opacity 0.4s;
   }
-  .active-turn .player-brand {
-    opacity: 1;
+  .active-turn .player-brand { opacity: 1; }
+  .player-name {
+    font-family: 'Quicksand', sans-serif; font-weight: 700;
+    font-size: 0.7rem; letter-spacing: 1px; transition: color 0.4s;
   }
-
-  .player-label {
-    font-family: 'Quicksand', sans-serif;
-    font-weight: 600;
-    font-size: 0.65rem;
-    letter-spacing: 1px;
-    color: rgba(255,255,255,0.4);
-    text-transform: uppercase;
-    transition: color 0.4s;
-  }
-  .p1-strip .player-label { color: var(--p1); opacity: 0.7; }
-  .p2-strip .player-label { color: var(--p2); opacity: 0.7; }
-  .active-turn .player-label {
-    opacity: 1;
-  }
-
+  .p1-strip .player-name { color: var(--p1); opacity: 0.8; }
+  .p2-strip .player-name { color: var(--p2); opacity: 0.8; }
+  .active-turn .player-name { opacity: 1; }
   .turn-text {
-    font-family: 'Quicksand', sans-serif;
-    font-weight: 700;
-    font-size: 0.7rem;
-    color: rgba(255,255,255,0.0);
-    letter-spacing: 0.5px;
-    transition: color 0.4s;
+    font-family: 'Quicksand', sans-serif; font-weight: 600;
+    font-size: 0.6rem; color: rgba(255,255,255,0.0);
+    letter-spacing: 0.5px; transition: color 0.4s;
+    text-transform: uppercase;
   }
-  .active-turn .turn-text {
-    color: rgba(255,255,255,0.85);
-  }
+  .active-turn .turn-text { color: rgba(255,255,255,0.7); }
 
   .score-display {
-    font-family: 'Baloo 2', sans-serif;
-    font-weight: 800;
-    font-size: 2rem;
-    color: #fff;
-    opacity: 0.3;
-    transition: opacity 0.4s, font-size 0.3s;
-    line-height: 1;
+    font-family: 'Orbitron', monospace; font-weight: 900;
+    font-size: 1.8rem; color: #fff; opacity: 0.25;
+    transition: opacity 0.4s, font-size 0.3s; line-height: 1;
   }
-  .active-turn .score-display {
-    opacity: 1;
-    font-size: 2.2rem;
-  }
+  .active-turn .score-display { opacity: 1; font-size: 2rem; }
   .p1-strip .score-display { color: var(--p1); }
   .p2-strip .score-display { color: var(--p2); }
 
-  /* ---------- Board ---------- */
+  /* Board */
   .board-wrap {
-    flex: 1;
-    position: relative;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 8px;
+    flex: 1; position: relative; z-index: 1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 6px 8px; gap: 6px; overflow: hidden;
   }
+
+  /* Status bar */
+  .status-bar {
+    font-family: 'Orbitron', monospace; font-size: 0.62rem;
+    letter-spacing: 1.5px; color: var(--muted2);
+    padding: 0.35rem 1rem; background: var(--surface2);
+    border: 1px solid var(--border); border-radius: 8px;
+    min-height: 28px; display: flex; align-items: center;
+    justify-content: center; transition: all 0.3s;
+    max-width: 420px; width: 100%; flex-shrink: 0;
+  }
+  .status-match { color: var(--p1); border-color: rgba(0,245,160,0.3); }
+  .status-no { color: var(--pink); border-color: rgba(244,114,182,0.3); }
 
   #board {
-    display: grid;
-    gap: 6px;
-    width: 100%;
-    max-width: 420px;
+    display: grid; gap: 5px;
+    width: 100%; max-width: 420px;
+    flex-shrink: 1;
   }
 
-  /* ---------- Cards ---------- */
+  /* Cards */
   .card {
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    perspective: 600px;
-    aspect-ratio: 1;
+    background: none; border: none; padding: 0;
+    cursor: pointer; perspective: 600px; aspect-ratio: 1;
   }
   .card:disabled { cursor: default; }
-
   .card-inner {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative; width: 100%; height: 100%;
+    transition: transform 0.45s cubic-bezier(0.4,0,0.2,1);
     transform-style: preserve-3d;
   }
   .card.flipped .card-inner { transform: rotateY(180deg); }
-
   .card-back, .card-face {
-    position: absolute;
-    inset: 0;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: absolute; inset: 0;
+    backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
   }
-
   .card-back {
-    background: linear-gradient(135deg, #2a2d55, #1f2240);
-    border: 1.5px solid rgba(255,255,255,0.12);
-    box-shadow: 0 3px 0 rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
-    flex-direction: column;
-    gap: 2px;
+    background: var(--surface);
+    background-image:
+      linear-gradient(rgba(244,114,182,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(244,114,182,0.04) 1px, transparent 1px);
+    background-size: 12px 12px;
+    border: 1.5px solid var(--border);
+    box-shadow: 0 2px 0 rgba(0,0,0,0.4);
+    flex-direction: column; gap: 3px;
   }
-
+  .card-back::after {
+    content: '🧠';
+    font-size: clamp(0.9rem, 3vw, 1.3rem);
+    filter: saturate(0) opacity(0.25);
+  }
   .card-back-label {
-    font-family: 'Baloo 2', sans-serif;
-    font-weight: 800;
-    font-size: clamp(0.45rem, 1.8vw, 0.75rem);
-    letter-spacing: 1.5px;
-    color: rgba(255,255,255,0.25);
-    text-align: center;
-    line-height: 1;
+    font-family: 'Orbitron', monospace; font-weight: 700;
+    font-size: clamp(0.4rem, 1.5vw, 0.6rem); letter-spacing: 2px;
+    color: rgba(255,255,255,0.2); text-align: center; line-height: 1;
   }
-
   .card-face {
-    background: var(--cream);
-    border: 1.5px solid rgba(255,255,255,0.3);
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
     transform: rotateY(180deg);
-    font-size: clamp(1.1rem, 5vw, 1.8rem);
-    box-shadow: 0 3px 0 rgba(0,0,0,0.3);
+    font-size: clamp(1rem, 4.5vw, 1.8rem);
+    box-shadow: 0 2px 0 rgba(0,0,0,0.3);
+    flex-direction: column; gap: 2px;
   }
-
   .card.matched .card-face {
-    box-shadow: 0 0 0 2.5px var(--match-clr, #3b82f6) inset, 0 3px 0 rgba(0,0,0,0.2);
+    border-color: rgba(0,245,160,0.5);
+    background: rgba(0,245,160,0.08);
+    box-shadow: 0 0 12px rgba(0,245,160,0.12);
   }
-  .card.matched .card-back {
-    background: rgba(255,255,255,0.05);
+  .card.matched-p2 .card-face {
+    border-color: rgba(244,114,182,0.5);
+    background: rgba(244,114,182,0.08);
+    box-shadow: 0 0 12px rgba(244,114,182,0.12);
   }
+  .match-dot {
+    width: 5px; height: 5px; border-radius: 50%; display: none;
+  }
+  .card.matched .match-dot { display: block; background: var(--p1); }
+  .card.matched-p2 .match-dot { display: block; background: var(--p2); }
 
-  /* ---------- Restart button (center) ---------- */
+  /* Restart btn */
   .center-btn {
-    position: absolute;
-    bottom: 76px;
-    right: 14px;
-    z-index: 5;
-    background: rgba(255,255,255,0.1);
-    border: 1.5px solid rgba(255,255,255,0.2);
-    color: #fff;
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    font-size: 1rem;
-    cursor: pointer;
+    position: absolute; bottom: 72px; right: 12px; z-index: 5;
+    background: rgba(255,255,255,0.08);
+    border: 1.5px solid rgba(255,255,255,0.18);
+    color: #fff; width: 34px; height: 34px; border-radius: 50%;
+    font-size: 0.95rem; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
     backdrop-filter: blur(6px);
   }
 
-  /* ---------- Win Modal ---------- */
-  .modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(5,6,18,0.85);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 20;
-    backdrop-filter: blur(4px);
+  /* Win Modal */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(5,7,15,0.9);
+    display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(10px);
   }
-  .modal[hidden] { display: none; }
+  .modal-overlay.show { display: flex; }
+  .modal-box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; padding: 2.5rem 2rem;
+    text-align: center; max-width: 340px; width: 90%;
+    position: relative; overflow: hidden;
+  }
+  .modal-glow {
+    position: absolute; width: 280px; height: 280px;
+    border-radius: 50%; filter: blur(80px); opacity: 0.15;
+    top: 50%; left: 50%; transform: translate(-50%,-50%);
+    pointer-events: none;
+  }
+  .modal-logo {
+    font-family: 'Orbitron', monospace; font-weight: 900;
+    font-size: 0.8rem; letter-spacing: 4px; color: var(--p1);
+    margin-bottom: 1rem; display: block; position: relative; z-index: 1;
+  }
+  .modal-emoji { font-size: 3.5rem; margin-bottom: 0.8rem; position: relative; z-index: 1; }
+  .modal-title {
+    font-family: 'Baloo 2', sans-serif; font-weight: 800;
+    font-size: 1.5rem; color: var(--text); margin-bottom: 0.4rem;
+    position: relative; z-index: 1;
+  }
+  .modal-subtitle {
+    color: var(--muted2); font-size: 0.85rem; margin-bottom: 1.5rem;
+    position: relative; z-index: 1;
+  }
+  .modal-scores {
+    display: flex; gap: 0.8rem; justify-content: center;
+    margin-bottom: 1.5rem; position: relative; z-index: 1;
+  }
+  .modal-score {
+    padding: 0.7rem 1.3rem; border-radius: 12px;
+    background: var(--surface2); border: 1px solid var(--border); min-width: 100px;
+  }
+  .modal-score-name {
+    font-family: 'Orbitron', monospace; font-size: 0.6rem;
+    font-weight: 700; letter-spacing: 1px; margin-bottom: 0.3rem;
+  }
+  .modal-score-num {
+    font-family: 'Orbitron', monospace; font-size: 1.7rem; font-weight: 900;
+  }
+  .modal-btns { display: flex; flex-direction: column; gap: 0.5rem; position: relative; z-index: 1; }
+  .btn-pa-main {
+    font-family: 'Orbitron', monospace; font-size: 0.78rem; font-weight: 700;
+    letter-spacing: 2px; padding: 0.85rem 2rem; border-radius: 12px;
+    border: none; cursor: pointer;
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    color: white; transition: all 0.2s;
+    box-shadow: 0 0 25px rgba(244,114,182,0.2);
+  }
+  .btn-pa-main:hover { transform: translateY(-2px); }
+  .btn-pa-back {
+    font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 1.5px; padding: 0.7rem 2rem; border-radius: 12px;
+    border: 1px solid var(--border); background: transparent;
+    color: var(--muted2); cursor: pointer; transition: all 0.2s;
+  }
+  .btn-pa-back:hover { border-color: var(--p1); color: var(--p1); }
 
-  .modal-card {
-    background: linear-gradient(160deg, #1e2155, #2d1f55);
-    border-radius: 20px;
-    padding: 32px 28px;
-    text-align: center;
-    max-width: 300px;
-    width: 90%;
-    border: 1.5px solid rgba(255,255,255,0.12);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  #confetti-canvas {
+    position: fixed; inset: 0; pointer-events: none; z-index: 199;
   }
-  .modal-card .krixel-logo {
-    font-family: 'Baloo 2', sans-serif;
-    font-weight: 800;
-    font-size: 1.6rem;
-    letter-spacing: 3px;
-    color: #fff;
-    margin-bottom: 14px;
-    display: block;
-  }
-  .modal-card h2 {
-    font-family: 'Baloo 2', sans-serif;
-    font-size: 1.3rem;
-    color: #fff;
-    margin-bottom: 6px;
-  }
-  .modal-card p {
-    color: rgba(255,255,255,0.55);
-    font-weight: 600;
-    margin-bottom: 22px;
-  }
-  .modal-card button {
-    font-family: 'Baloo 2', sans-serif;
-    font-weight: 700;
-    font-size: 1rem;
-    background: var(--card-back);
-    color: var(--ink);
-    border: none;
-    padding: 11px 26px;
-    border-radius: 30px;
-    cursor: pointer;
-    box-shadow: 0 4px 0 var(--card-back-shade);
-  }
-  .modal-card button:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--card-back-shade); }
 
   @media (prefers-reduced-motion: reduce) {
     .card-inner { transition: none !important; }
     .card.flipped .card-back { display: none; }
     .card:not(.flipped) .card-face { display: none; }
     .card-face { transform: none; }
-    html, body, .player-strip { transition: none !important; }
+    .player-strip { transition: none !important; }
   }
 </style>
 </head>
 <body>
 
-<div class="app">
+<div class="bg-grid"></div>
+<div class="bg-orbs"><div class="orb orb1"></div><div class="orb orb2"></div></div>
+<canvas id="confetti-canvas"></canvas>
+
+<!-- ── SETUP SCREEN ── -->
+<div id="setup-screen">
+  <div class="setup-logo">KRIXEL</div>
+  <div class="setup-title">MEMORY<br>MATCH</div>
+  <div class="setup-sub">FLIP · MATCH · WIN</div>
+
+  <div class="name-inputs">
+    <div class="player-input-wrap">
+      <div class="player-tag p1-tag">PLAYER 1</div>
+      <input class="player-input p1" id="p1name" type="text" placeholder="Enter name" maxlength="12"/>
+    </div>
+    <div class="player-input-wrap">
+      <div class="player-tag p2-tag">PLAYER 2</div>
+      <input class="player-input p2" id="p2name" type="text" placeholder="Enter name" maxlength="12"/>
+    </div>
+  </div>
+
+  <div class="grid-select-label">SELECT GRID SIZE</div>
+  <div class="grid-options">
+    <div class="grid-opt" data-grid="3x4">3×4 <span style="color:var(--muted);font-size:0.6rem;">6 pairs</span></div>
+    <div class="grid-opt selected" data-grid="4x4">4×4 <span style="color:var(--muted);font-size:0.6rem;">8 pairs</span></div>
+    <div class="grid-opt" data-grid="4x6">4×6 <span style="color:var(--muted);font-size:0.6rem;">12 pairs</span></div>
+  </div>
+
+  <button class="btn-start" id="btn-start">START GAME</button>
+</div>
+
+<!-- ── GAME SCREEN ── -->
+<div class="app" id="game-screen" style="display:none;">
   <!-- P2 strip (top, rotated) -->
   <div class="player-strip p2-strip" id="p2Strip">
     <div class="player-left">
       <div class="player-brand">KRIXEL</div>
-      <div class="player-label">Player 2</div>
-      <div class="turn-text" id="p2TurnText">now your turn</div>
+      <div class="player-name" id="p2Name">PLAYER 2</div>
+      <div class="turn-text" id="p2TurnText">your turn</div>
     </div>
     <div class="score-display" id="p2Score">0</div>
   </div>
 
-  <!-- Board -->
+  <!-- Board + status -->
   <div class="board-wrap">
     <div id="board"></div>
+    <div class="status-bar" id="status-bar">Choose a card to flip</div>
   </div>
 
   <!-- P1 strip (bottom) -->
   <div class="player-strip p1-strip" id="p1Strip">
     <div class="player-left">
       <div class="player-brand">KRIXEL</div>
-      <div class="player-label">Player 1</div>
-      <div class="turn-text" id="p1TurnText">now your turn</div>
+      <div class="player-name" id="p1Name">PLAYER 1</div>
+      <div class="turn-text" id="p1TurnText">your turn</div>
     </div>
     <div class="score-display" id="p1Score">0</div>
   </div>
@@ -340,197 +466,338 @@
   <button class="center-btn" id="restartBtn" aria-label="Restart">⟲</button>
 </div>
 
-<div class="modal" id="winModal" hidden>
-  <div class="modal-card">
-    <span class="krixel-logo">KRIXEL</span>
-    <h2 id="winTitle">Player 1 Wins!</h2>
-    <p id="winScores">7 — 4</p>
-    <button id="playAgainBtn">Play Again</button>
+<!-- ── WIN MODAL ── -->
+<div class="modal-overlay" id="win-modal">
+  <div class="modal-box">
+    <div class="modal-glow" id="modal-glow"></div>
+    <span class="modal-logo">KRIXEL</span>
+    <div class="modal-emoji" id="modal-emoji">🏆</div>
+    <div class="modal-title" id="modal-title">WINNER!</div>
+    <div class="modal-subtitle" id="modal-subtitle">Excellent memory!</div>
+    <div class="modal-scores">
+      <div class="modal-score">
+        <div class="modal-score-name" id="ms-p1-name" style="color:var(--p1)">P1</div>
+        <div class="modal-score-num" id="ms-p1-score" style="color:var(--p1)">0</div>
+      </div>
+      <div class="modal-score">
+        <div class="modal-score-name" id="ms-p2-name" style="color:var(--p2)">P2</div>
+        <div class="modal-score-num" id="ms-p2-score" style="color:var(--p2)">0</div>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-pa-main" id="btn-pa">PLAY AGAIN</button>
+      <button class="btn-pa-back" id="btn-setup">CHANGE PLAYERS</button>
+    </div>
   </div>
 </div>
 
 <script>
 (function(){
-  const ICONS = ['🎮','🎯','🎨','🎵','🎲','🚀','⭐','🔥','💎','🍕','🦄','🌈'];
-  // 22 cards = 11 pairs in 4 rows of ~5-6
-  // We'll do 4 rows: 6,6,5,5 = 22 cards
-  const GRID_COLS = 4;
-  const TOTAL_PAIRS = 12; // 24 cards total
+  const EMOJI_POOL = [
+    '🔥','⚡','🌊','🌸','🎯','💎','🚀','🌙',
+    '🦋','🐉','🎸','🍀','🌈','🎭','🦄','🔮',
+    '🍕','🎪','🦊','🐙','🎲','🌺','🏆','🎵'
+  ];
 
-  const boardEl   = document.getElementById('board');
-  const p1Score   = document.getElementById('p1Score');
-  const p2Score   = document.getElementById('p2Score');
-  const p1Strip   = document.getElementById('p1Strip');
-  const p2Strip   = document.getElementById('p2Strip');
-  const p1TurnTxt = document.getElementById('p1TurnText');
-  const p2TurnTxt = document.getElementById('p2TurnText');
-  const restartBtn= document.getElementById('restartBtn');
-  const winModal  = document.getElementById('winModal');
-  const winTitle  = document.getElementById('winTitle');
-  const winScores = document.getElementById('winScores');
-  const playAgainBtn = document.getElementById('playAgainBtn');
+  // Grid configs
+  const GRID_MAP = {
+    '3x4': { pairs: 6,  cols: 4 },
+    '4x4': { pairs: 8,  cols: 4 },
+    '4x6': { pairs: 12, cols: 6 }
+  };
 
-  let cards = [], firstPick = null, secondPick = null;
-  let lock = false, currentPlayer = 1;
-  let scores = {1:0, 2:0}, matchedCount = 0;
+  // State
+  let state = {
+    p1: 'PLAYER 1', p2: 'PLAYER 2',
+    gridType: '4x4',
+    cards: [], scores: [0,0],
+    turn: 0, // 0=p1, 1=p2
+    flipped: [], matched: new Set(),
+    locked: false
+  };
 
-  function calcGrid() {
-    const boardWrap = document.querySelector('.board-wrap');
-    const w = boardWrap.clientWidth - 16;
-    const h = boardWrap.clientHeight - 16;
-    const totalCards = TOTAL_PAIRS * 2; // 24
-    let bestCols = 4, bestSize = 0;
-    for (let c = 3; c <= 6; c++) {
-      const r = Math.ceil(totalCards / c);
-      const cardW = (w - (c-1)*6) / c;
-      const cardH = (h - (r-1)*6) / r;
-      const sz = Math.min(cardW, cardH);
-      if (sz > bestSize) { bestSize = sz; bestCols = c; }
-    }
-    return { cols: bestCols };
-  }
+  // Elements
+  const setupScreen  = document.getElementById('setup-screen');
+  const gameScreen   = document.getElementById('game-screen');
+  const boardEl      = document.getElementById('board');
+  const p1ScoreEl    = document.getElementById('p1Score');
+  const p2ScoreEl    = document.getElementById('p2Score');
+  const p1NameEl     = document.getElementById('p1Name');
+  const p2NameEl     = document.getElementById('p2Name');
+  const p1Strip      = document.getElementById('p1Strip');
+  const p2Strip      = document.getElementById('p2Strip');
+  const p1TurnTxt    = document.getElementById('p1TurnText');
+  const p2TurnTxt    = document.getElementById('p2TurnText');
+  const statusBar    = document.getElementById('status-bar');
+  const restartBtn   = document.getElementById('restartBtn');
+  const winModal     = document.getElementById('win-modal');
+  const msP1Name     = document.getElementById('ms-p1-name');
+  const msP2Name     = document.getElementById('ms-p2-name');
+  const msP1Score    = document.getElementById('ms-p1-score');
+  const msP2Score    = document.getElementById('ms-p2-score');
 
-  function shuffle(arr){
-    for(let i = arr.length-1; i>0; i--){
-      const j = Math.floor(Math.random()*(i+1));
-      [arr[i],arr[j]] = [arr[j],arr[i]];
-    }
-    return arr;
-  }
-
-  function buildDeck(){
-    const icons = shuffle([...ICONS]).slice(0, TOTAL_PAIRS);
-    let deck = [];
-    icons.forEach((icon, idx) => {
-      deck.push({icon, pairId: idx});
-      deck.push({icon, pairId: idx});
+  // ── SETUP ──
+  document.querySelectorAll('.grid-opt').forEach(el => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('.grid-opt').forEach(e => e.classList.remove('selected'));
+      el.classList.add('selected');
+      state.gridType = el.dataset.grid;
     });
-    return shuffle(deck).map((c,i) => ({...c, id:i, flipped:false, matched:false, matchedBy:null}));
+  });
+
+  document.getElementById('p1name').addEventListener('keydown', e => {
+    if(e.key==='Enter') document.getElementById('p2name').focus();
+  });
+  document.getElementById('p2name').addEventListener('keydown', e => {
+    if(e.key==='Enter') startGame();
+  });
+  document.getElementById('btn-start').addEventListener('click', startGame);
+  restartBtn.addEventListener('click', () => startGame(true));
+  document.getElementById('btn-pa').addEventListener('click', () => {
+    winModal.classList.remove('show');
+    stopConfetti();
+    startGame(true);
+  });
+  document.getElementById('btn-setup').addEventListener('click', () => {
+    winModal.classList.remove('show');
+    stopConfetti();
+    gameScreen.style.display = 'none';
+    setupScreen.classList.remove('hidden');
+    setupScreen.style.display = 'flex';
+  });
+
+  function shuffle(arr) {
+    const a = [...arr];
+    for(let i=a.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [a[i],a[j]]=[a[j],a[i]];
+    }
+    return a;
   }
 
-  function render(){
-    const {cols} = calcGrid();
+  function startGame(keepNames) {
+    if(!keepNames) {
+      state.p1 = document.getElementById('p1name').value.trim().toUpperCase() || 'PLAYER 1';
+      state.p2 = document.getElementById('p2name').value.trim().toUpperCase() || 'PLAYER 2';
+    }
+
+    const cfg = GRID_MAP[state.gridType];
+    const icons = shuffle(EMOJI_POOL).slice(0, cfg.pairs);
+    state.cards = shuffle([...icons, ...icons].map((e, i) => ({ emoji: e, id: i })));
+    state.scores = [0, 0];
+    state.turn = 0;
+    state.flipped = [];
+    state.matched = new Set();
+    state.locked = false;
+
+    setupScreen.style.display = 'none';
+    gameScreen.style.display = 'flex';
+
+    p1NameEl.textContent = state.p1;
+    p2NameEl.textContent = state.p2;
+    msP1Name.textContent = state.p1;
+    msP2Name.textContent = state.p2;
+
+    renderBoard(cfg.cols);
+    updateTurnUI();
+    updateScores();
+    setStatus('Choose a card to flip', '');
+  }
+
+  // ── RENDER ──
+  function renderBoard(cols) {
     boardEl.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
     boardEl.innerHTML = '';
-    cards.forEach(c => boardEl.appendChild(buildCardEl(c)));
+    state.cards.forEach((card, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'card';
+      btn.dataset.idx = idx;
+
+      const inner = document.createElement('div');
+      inner.className = 'card-inner';
+
+      const back = document.createElement('div');
+      back.className = 'card-back';
+      const lbl = document.createElement('div');
+      lbl.className = 'card-back-label';
+      lbl.textContent = 'KRIXEL';
+      back.appendChild(lbl);
+
+      const face = document.createElement('div');
+      face.className = 'card-face';
+      face.innerHTML = `<span>${card.emoji}</span><div class="match-dot"></div>`;
+
+      inner.appendChild(back);
+      inner.appendChild(face);
+      btn.appendChild(inner);
+      btn.addEventListener('click', () => onCardClick(idx));
+      boardEl.appendChild(btn);
+    });
   }
 
-  function buildCardEl(c){
-    const btn = document.createElement('button');
-    btn.className = 'card' + (c.flipped?' flipped':'') + (c.matched?' matched':'');
-    btn.dataset.id = c.id;
-    if(c.matched) {
-      btn.disabled = true;
-      btn.style.setProperty('--match-clr', c.matchedBy===1 ? '#3b82f6' : '#ef4444');
+  // ── CARD CLICK ──
+  function onCardClick(idx) {
+    if(state.locked) return;
+    if(state.matched.has(idx)) return;
+    if(state.flipped.includes(idx)) return;
+    if(state.flipped.length >= 2) return;
+
+    flipCard(idx, true);
+    state.flipped.push(idx);
+
+    if(state.flipped.length === 1) {
+      setStatus('Pick another card...', '');
+      return;
     }
 
-    const inner = document.createElement('div');
-    inner.className = 'card-inner';
+    state.locked = true;
+    const [i1, i2] = state.flipped;
+    const match = state.cards[i1].emoji === state.cards[i2].emoji;
 
-    const back = document.createElement('div');
-    back.className = 'card-back';
-    const lbl = document.createElement('div');
-    lbl.className = 'card-back-label';
-    lbl.textContent = 'KRIXEL';
-    back.appendChild(lbl);
-
-    const face = document.createElement('div');
-    face.className = 'card-face';
-    face.textContent = c.icon;
-
-    inner.appendChild(back);
-    inner.appendChild(face);
-    btn.appendChild(inner);
-    btn.addEventListener('click', () => onCardClick(c.id));
-    return btn;
-  }
-
-  function onCardClick(id){
-    if(lock) return;
-    const card = cards.find(c => c.id===id);
-    if(!card || card.flipped || card.matched) return;
-
-    card.flipped = true;
-    updateCard(card);
-
-    if(!firstPick){ firstPick = card; return; }
-
-    secondPick = card;
-    lock = true;
-
-    if(firstPick.pairId === secondPick.pairId){
-      firstPick.matched = secondPick.matched = true;
-      firstPick.matchedBy = secondPick.matchedBy = currentPlayer;
-      scores[currentPlayer]++;
-      matchedCount += 2;
+    if(match) {
+      state.scores[state.turn]++;
+      state.matched.add(i1);
+      state.matched.add(i2);
+      markMatched(i1, i2);
+      const scorer = state.turn === 0 ? state.p1 : state.p2;
+      setStatus('✓ MATCH! ' + scorer + ' gets a point!', 'status-match');
       updateScores();
-      updateCard(firstPick); updateCard(secondPick);
-      firstPick = null; secondPick = null; lock = false;
-      if(matchedCount === cards.length) setTimeout(showWin, 400);
+      state.flipped = [];
+      state.locked = false;
+      if(state.matched.size === state.cards.length) setTimeout(showWin, 500);
     } else {
-      setTimeout(()=>{
-        firstPick.flipped = secondPick.flipped = false;
-        updateCard(firstPick); updateCard(secondPick);
-        firstPick = null; secondPick = null; lock = false;
-        switchPlayer();
-      }, 850);
+      setStatus('✗ No match — flipping back!', 'status-no');
+      setTimeout(() => {
+        flipCard(i1, false);
+        flipCard(i2, false);
+        state.flipped = [];
+        state.turn = 1 - state.turn;
+        state.locked = false;
+        updateTurnUI();
+        setStatus('Choose a card to flip', '');
+      }, 900);
     }
   }
 
-  function updateCard(card){
-    const btn = boardEl.querySelector(`[data-id="${card.id}"]`);
-    if(!btn) return;
-    btn.className = 'card' + (card.flipped?' flipped':'') + (card.matched?' matched':'');
-    if(card.matched){
-      btn.disabled = true;
-      btn.style.setProperty('--match-clr', card.matchedBy===1 ? '#3b82f6' : '#ef4444');
-    }
+  function flipCard(idx, show) {
+    const el = boardEl.querySelector(`[data-idx="${idx}"]`);
+    if(!el) return;
+    el.classList.toggle('flipped', show);
   }
 
-  function switchPlayer(){
-    currentPlayer = currentPlayer===1 ? 2 : 1;
-    updateTurnUI();
+  function markMatched(i1, i2) {
+    [i1, i2].forEach(idx => {
+      const el = boardEl.querySelector(`[data-idx="${idx}"]`);
+      if(!el) return;
+      el.disabled = true;
+      if(state.turn === 0) el.classList.add('matched');
+      else el.classList.add('matched-p2');
+    });
   }
 
-  function updateTurnUI(){
-    const isP1 = currentPlayer===1;
-    // Strip active classes
+  function updateTurnUI() {
+    const isP1 = state.turn === 0;
     p1Strip.classList.toggle('active-turn', isP1);
     p2Strip.classList.toggle('active-turn', !isP1);
-    // Body/bg color
+    p1TurnTxt.style.color = isP1 ? '' : 'transparent';
+    p2TurnTxt.style.color = !isP1 ? '' : 'transparent';
     document.body.style.background = isP1
-      ? 'linear-gradient(180deg, #0a0f2e 0%, #0f1a3d 100%)'
-      : 'linear-gradient(180deg, #2a0a0a 0%, #1a0505 100%)';
+      ? 'linear-gradient(180deg, #040c1a 0%, #060f22 100%)'
+      : 'linear-gradient(180deg, #180a18 0%, #100515 100%)';
   }
 
-  function updateScores(){
-    p1Score.textContent = scores[1];
-    p2Score.textContent = scores[2];
+  function updateScores() {
+    p1ScoreEl.textContent = state.scores[0];
+    p2ScoreEl.textContent = state.scores[1];
+    msP1Score.textContent = state.scores[0];
+    msP2Score.textContent = state.scores[1];
   }
 
-  function showWin(){
-    let title;
-    if(scores[1]===scores[2]) title = "It's a Tie! 🤝";
-    else title = "Player " + (scores[1]>scores[2]?1:2) + " Wins! 🎉";
-    winTitle.textContent = title;
-    winScores.textContent = scores[1] + ' — ' + scores[2];
-    winModal.hidden = false;
+  function setStatus(msg, cls) {
+    statusBar.textContent = msg;
+    statusBar.className = 'status-bar ' + (cls || '');
   }
 
-  function newGame(){
-    cards = buildDeck();
-    firstPick=null; secondPick=null; lock=false;
-    currentPlayer=1; scores={1:0,2:0}; matchedCount=0;
-    updateScores(); updateTurnUI();
-    winModal.hidden = true;
-    render();
+  // ── WIN ──
+  function showWin() {
+    const [s1, s2] = state.scores;
+    let emoji, title, sub, glowColor;
+    if(s1 > s2) {
+      emoji = '🏆'; title = state.p1 + ' WINS!';
+      sub = 'Excellent memory!'; glowColor = 'var(--p1)';
+    } else if(s2 > s1) {
+      emoji = '🏆'; title = state.p2 + ' WINS!';
+      sub = 'Excellent memory!'; glowColor = 'var(--p2)';
+    } else {
+      emoji = '🤝'; title = "IT'S A TIE!";
+      sub = 'Equal minds — play again!'; glowColor = 'var(--purple)';
+    }
+    document.getElementById('modal-emoji').textContent = emoji;
+    document.getElementById('modal-title').textContent = title;
+    document.getElementById('modal-subtitle').textContent = sub;
+    document.getElementById('modal-glow').style.background = glowColor;
+    winModal.classList.add('show');
+    launchConfetti();
   }
 
-  restartBtn.addEventListener('click', newGame);
-  playAgainBtn.addEventListener('click', newGame);
-  window.addEventListener('resize', () => render());
+  // ── CONFETTI ──
+  let confettiAF = null;
+  function launchConfetti() {
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const colors = ['#00F5A0','#F472B6','#8B5CF6','#00D4FF','#F97316','#FBBF24'];
+    let particles = Array.from({length: 100}, () => ({
+      x: Math.random() * canvas.width,
+      y: -10 - Math.random() * 150,
+      w: 7 + Math.random() * 7, h: 3 + Math.random() * 4,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      rot: Math.random()*Math.PI*2,
+      vx: (Math.random()-0.5)*3, vy: 2+Math.random()*3,
+      vrot: (Math.random()-0.5)*0.14, opacity: 1
+    }));
+    function draw() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      particles.forEach(p => {
+        p.x+=p.vx; p.y+=p.vy; p.rot+=p.vrot;
+        if(p.y>canvas.height*0.6) p.opacity-=0.018;
+        ctx.save();
+        ctx.globalAlpha=Math.max(0,p.opacity);
+        ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+        ctx.fillStyle=p.color;
+        ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+        ctx.restore();
+      });
+      particles = particles.filter(p=>p.opacity>0);
+      if(particles.length>0) confettiAF=requestAnimationFrame(draw);
+      else ctx.clearRect(0,0,canvas.width,canvas.height);
+    }
+    confettiAF=requestAnimationFrame(draw);
+  }
+  function stopConfetti() {
+    if(confettiAF) cancelAnimationFrame(confettiAF);
+    const canvas = document.getElementById('confetti-canvas');
+    canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
+  }
 
-  newGame();
+  window.addEventListener('resize', () => {
+    if(gameScreen.style.display !== 'none') {
+      const cfg = GRID_MAP[state.gridType];
+      renderBoard(cfg.cols);
+      // Re-apply card states
+      state.cards.forEach((_, idx) => {
+        if(state.flipped.includes(idx)) flipCard(idx, true);
+        if(state.matched.has(idx)) {
+          const el = boardEl.querySelector(`[data-idx="${idx}"]`);
+          if(el) {
+            el.disabled = true;
+            el.classList.add('flipped');
+          }
+        }
+      });
+    }
+  });
 })();
 </script>
 </body>

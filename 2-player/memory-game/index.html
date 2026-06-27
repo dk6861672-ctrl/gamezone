@@ -245,9 +245,9 @@ document.head.appendChild(ns);
   .board-wrap {
     flex: 1; position: relative; z-index: 1;
     display: flex; flex-direction: column;
-    align-items: center; justify-content: flex-start;
-    padding: 8px 8px 4px; gap: 6px;
-    overflow-y: auto; overflow-x: hidden;
+    align-items: center; justify-content: center;
+    padding: 4px 8px; gap: 6px;
+    overflow: hidden;
   }
 
   /* Status bar */
@@ -266,10 +266,9 @@ document.head.appendChild(ns);
 
   #board {
     position: relative;
-    width: 100%;
-    max-width: 460px;
-    flex-shrink: 1;
-    /* height set by JS */
+    /* width/height set dynamically by JS */
+    flex-shrink: 0;
+    margin: auto;
   }
 
   /* Cards */
@@ -663,10 +662,10 @@ document.head.appendChild(ns);
     msP1Name.textContent = state.p1;
     msP2Name.textContent = state.p2;
 
-    renderBoard(cfg.cols);
     updateTurnUI();
     updateScores();
     setStatus('Choose a card to flip', '');
+    requestAnimationFrame(() => renderBoard(cfg.cols));
   }
 
   // ── RENDER ──
@@ -681,15 +680,22 @@ document.head.appendChild(ns);
     boardEl.style.position = 'relative';
     boardEl.style.display = 'block';
 
-    const boardW = boardEl.offsetWidth || 420;
+    // Use full available wrap dimensions
+    const wrap = boardEl.parentElement;
+    const boardW = wrap.clientWidth - 16;
+    const boardH = wrap.clientHeight - 48;
+
     const staggerData = STAGGER[cols] || STAGGER[4];
     const rows = Math.ceil(state.cards.length / cols);
 
-    // Card size: bigger than before, slight size variation per row
-    const baseSizeRaw = Math.min((boardW - (cols+1)*7) / cols, 90);
-    const baseSize = Math.max(baseSizeRaw, 58);
-    const gap = 7;
-    const totalBoardH = rows * (baseSize + gap) + 18;
+    const gap = 6;
+    const sizeByW = Math.floor((boardW - (cols - 1) * gap) / cols);
+    const sizeByH = Math.floor((boardH - (rows - 1) * gap) / rows);
+    const baseSize = Math.max(Math.min(sizeByW, sizeByH), 56);
+
+    const totalBoardW = cols * baseSize + (cols - 1) * gap;
+    const totalBoardH = rows * baseSize + (rows - 1) * gap;
+    boardEl.style.width  = totalBoardW + 'px';
     boardEl.style.height = totalBoardH + 'px';
 
     const rotArr = staggerData.rotations;
@@ -700,12 +706,12 @@ document.head.appendChild(ns);
       const row = Math.floor(idx / cols);
       const rowShift = (shiftArr[row % shiftArr.length] || 0);
 
-      // Size variation: some cards slightly larger/smaller
-      const sizeVar = [0, 4, -3, 3, -2, 2, -4, 3][idx % 8];
+      // Slight size variation
+      const sizeVar = [0, 3, -2, 3, -2, 2, -3, 2][idx % 8];
       const sz = baseSize + sizeVar;
 
-      const x = col * (baseSize + gap) + rowShift + (boardW - cols*(baseSize+gap)+gap) / 2;
-      const y = row * (baseSize + gap) + 8;
+      const x = col * (baseSize + gap) + rowShift;
+      const y = row * (baseSize + gap);
       const rot = rotArr[idx % rotArr.length];
 
       const btn = document.createElement('button');

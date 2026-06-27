@@ -563,11 +563,14 @@ document.head.appendChild(ns);
     '🍕','🎪','🦊','🐙','🎲','🌺','🏆','🎵'
   ];
 
-  // Grid configs
+  // rowPattern sum = total cards. Must be even (pairs*2).
+  // 3x4: [2,3,3,2] = 10 cards = 5 pairs
+  // 4x4: [3,4,4,4,4,3] = 22 → trim to [3,4,4,3,4,4] = 22 → 11 pairs  
+  // 4x6: [4,5,5,5,5,4] = 28 → 14 pairs
   const GRID_MAP = {
-    '3x4': { pairs: 6,  cols: 4 },
-    '4x4': { pairs: 8,  cols: 4 },
-    '4x6': { pairs: 12, cols: 6 }
+    '3x4': { pairs: 5,  rowPattern: [2,3,3,2]         },
+    '4x4': { pairs: 11, rowPattern: [3,4,4,4,4,3]     },
+    '4x6': { pairs: 14, rowPattern: [4,5,5,5,5,4]     }
   };
 
   // State
@@ -665,87 +668,78 @@ document.head.appendChild(ns);
     updateTurnUI();
     updateScores();
     setStatus('Choose a card to flip', '');
-    requestAnimationFrame(() => renderBoard(cfg.cols));
+    requestAnimationFrame(() => renderBoard(cfg.rowPattern));
   }
 
   // ── RENDER ──
-  // Stagger offsets per column-count
-  const STAGGER = {
-    4: { rowShifts: [0, 14, -8, 10, -12, 6], rotations: [-3,2,-1,3,-2,1,2,-3,1,-1,3,-2] },
-    6: { rowShifts: [0, 8, -5, 10, -8, 4],  rotations: [-2,1,-1,2,-1,1,2,-2,1,-1,2,-1,1,-1,2,-2,1,-1,2,-1,1,-2,1,-1] }
-  };
+  const ROTATIONS = [-4,-2,3,-3,2,-1,4,1,-2,3,-4,2,-1,3,-3,1,4,-2,-1,2,-3,3,-4,1];
 
-  function renderBoard(cols) {
+  function renderBoard(rowPattern) {
     boardEl.innerHTML = '';
     boardEl.style.position = 'relative';
-    boardEl.style.display = 'block';
+    boardEl.style.display  = 'block';
 
-    // Use full available wrap dimensions
-    const wrap = boardEl.parentElement;
-    const boardW = wrap.clientWidth - 16;
-    const boardH = wrap.clientHeight - 48;
+    const wrap   = boardEl.parentElement;
+    const availW = wrap.clientWidth  - 12;
+    const availH = wrap.clientHeight - 44; // room for status bar
 
-    const staggerData = STAGGER[cols] || STAGGER[4];
-    const rows = Math.ceil(state.cards.length / cols);
+    const numRows   = rowPattern.length;
+    const maxInRow  = Math.max(...rowPattern);
+    const gap       = 8;
 
-    const gap = 6;
-    const sizeByW = Math.floor((boardW - (cols - 1) * gap) / cols);
-    const sizeByH = Math.floor((boardH - (rows - 1) * gap) / rows);
-    const baseSize = Math.max(Math.min(sizeByW, sizeByH), 56);
+    // Card size: fit by width (using widest row) AND by height
+    const sizeByW = Math.floor((availW - (maxInRow - 1) * gap) / maxInRow);
+    const sizeByH = Math.floor((availH - (numRows  - 1) * gap) / numRows);
+    const sz      = Math.max(Math.min(sizeByW, sizeByH), 52);
 
-    const totalBoardW = cols * baseSize + (cols - 1) * gap;
-    const totalBoardH = rows * baseSize + (rows - 1) * gap;
-    boardEl.style.width  = totalBoardW + 'px';
-    boardEl.style.height = totalBoardH + 'px';
+    const totalH = numRows * sz + (numRows - 1) * gap;
+    const totalW = maxInRow * sz + (maxInRow - 1) * gap;
+    boardEl.style.width  = totalW + 'px';
+    boardEl.style.height = totalH + 'px';
 
-    const rotArr = staggerData.rotations;
-    const shiftArr = staggerData.rowShifts;
+    let cardIdx = 0;
+    rowPattern.forEach((count, rowIdx) => {
+      // Center each row within totalW
+      const rowW  = count * sz + (count - 1) * gap;
+      const startX = (totalW - rowW) / 2;
+      const y      = rowIdx * (sz + gap);
 
-    state.cards.forEach((card, idx) => {
-      const col = idx % cols;
-      const row = Math.floor(idx / cols);
-      const rowShift = (shiftArr[row % shiftArr.length] || 0);
+      for (let col = 0; col < count; col++) {
+        if (cardIdx >= state.cards.length) break;
+        const card = state.cards[cardIdx];
+        const idx  = cardIdx;
+        cardIdx++;
 
-      // Slight size variation
-      const sizeVar = [0, 3, -2, 3, -2, 2, -3, 2][idx % 8];
-      const sz = baseSize + sizeVar;
+        const x   = startX + col * (sz + gap);
+        const rot = ROTATIONS[idx % ROTATIONS.length];
 
-      const x = col * (baseSize + gap) + rowShift;
-      const y = row * (baseSize + gap);
-      const rot = rotArr[idx % rotArr.length];
+        const btn = document.createElement('button');
+        btn.className    = 'card';
+        btn.dataset.idx  = idx;
+        btn.dataset.rot  = rot;
+        btn.style.cssText = `width:${sz}px;height:${sz}px;left:${x}px;top:${y}px;z-index:${10+(idx%3)};`;
 
-      const btn = document.createElement('button');
-      btn.className = 'card';
-      btn.dataset.idx = idx;
-      btn.style.cssText = `
-        width:${sz}px; height:${sz}px;
-        left:${x}px; top:${y}px;
-        z-index: ${10 + (idx % 3)};
-      `;
-      btn.dataset.rot = rot;
+        const inner = document.createElement('div');
+        inner.className = 'card-inner';
+        inner.style.transform = `rotate(${rot}deg) rotateY(0deg)`;
 
-      const inner = document.createElement('div');
-      inner.className = 'card-inner';
+        const back = document.createElement('div');
+        back.className = 'card-back';
+        const lbl = document.createElement('div');
+        lbl.className = 'card-back-label';
+        lbl.textContent = 'KRIXEL';
+        back.appendChild(lbl);
 
-      const back = document.createElement('div');
-      back.className = 'card-back';
-      const lbl = document.createElement('div');
-      lbl.className = 'card-back-label';
-      lbl.textContent = 'KRIXEL';
-      back.appendChild(lbl);
+        const face = document.createElement('div');
+        face.className = 'card-face';
+        face.innerHTML = `<span>${card.emoji}</span><div class="match-dot"></div>`;
 
-      const face = document.createElement('div');
-      face.className = 'card-face';
-      face.innerHTML = `<span>${card.emoji}</span><div class="match-dot"></div>`;
-
-      inner.appendChild(back);
-      inner.appendChild(face);
-      btn.appendChild(inner);
-      btn.addEventListener('click', () => onCardClick(idx));
-      boardEl.appendChild(btn);
-
-      // set initial rotation on inner
-      inner.style.transform = `rotate(${rot}deg) rotateY(0deg)`;
+        inner.appendChild(back);
+        inner.appendChild(face);
+        btn.appendChild(inner);
+        btn.addEventListener('click', () => onCardClick(idx));
+        boardEl.appendChild(btn);
+      }
     });
   }
 
@@ -906,8 +900,7 @@ document.head.appendChild(ns);
   window.addEventListener('resize', () => {
     if(gameScreen.style.display !== 'none') {
       const cfg = GRID_MAP[state.gridType];
-      renderBoard(cfg.cols);
-      // Re-apply card states
+      renderBoard(cfg.rowPattern);
       state.cards.forEach((_, idx) => {
         if(state.flipped.includes(idx)) flipCard(idx, true);
         if(state.matched.has(idx)) {
@@ -915,9 +908,7 @@ document.head.appendChild(ns);
           if(el) {
             el.disabled = true;
             flipCard(idx, true);
-            const cls = (state.turn === 0 ||
-              (state.scores[0] > state.scores[1])) ? 'matched' : 'matched-p2';
-            el.classList.add(cls);
+            el.classList.add(state.turn === 0 ? 'matched' : 'matched-p2');
           }
         }
       });

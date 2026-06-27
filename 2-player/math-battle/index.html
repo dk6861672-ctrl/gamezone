@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex,nofollow"/>
+<meta http-equiv="Cache-Control" content="no-store"/>
+<script>(function(){
+document.addEventListener('contextmenu',function(e){e.preventDefault();return false;});
+document.addEventListener('keydown',function(e){
+  var k=e.key;
+  if(k==='F12'){e.preventDefault();e.stopPropagation();return false;}
+  if(e.ctrlKey&&e.shiftKey&&('iIjJcCkK'.indexOf(k)!==-1)){e.preventDefault();return false;}
+  if(e.ctrlKey&&('uUsS'.indexOf(k)!==-1)){e.preventDefault();return false;}
+  if(e.ctrlKey&&e.altKey){e.preventDefault();return false;}
+});
+document.addEventListener('selectstart',function(e){e.preventDefault();});
+document.addEventListener('dragstart',function(e){e.preventDefault();});
+document.addEventListener('copy',function(e){e.preventDefault();});
+var _d=function(){
+  if(window.outerWidth-window.innerWidth>160||window.outerHeight-window.innerHeight>160){
+    document.body.innerHTML='<div style="background:#0f0c29;display:flex;align-items:center;justify-content:height:100vh;"></div>';
+  }
+};
+setInterval(_d,800);
+window.addEventListener('load',function(){
+  document.querySelectorAll('img').forEach(function(i){
+    i.setAttribute('oncontextmenu','return false;');
+    i.setAttribute('draggable','false');
+  });
+});
+var ns=document.createElement('style');
+ns.textContent='@media print{body{display:none!important;}}*{-webkit-user-select:none!important;-moz-user-select:none!important;user-select:none!important;}';
+document.head.appendChild(ns);
+})();</script>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Math Battle — 2 Player</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Nunito',sans-serif;
+  background:#0f0c29;
+  min-height:100vh;
+  overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+
+.screen{display:none;width:100%;height:100vh;align-items:center;justify-content:center;}
+.screen.active{display:flex;flex-direction:column;}
+
+/* ───── SETUP ───── */
+#setupScreen{
+  background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
+  align-items:center;justify-content:center;
+}
+.setup-wrap{
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:28px;padding:2.5rem 3rem;
+  width:90%;max-width:520px;
+  backdrop-filter:blur(16px);
+}
+.game-logo{
+  font-family:'Orbitron',monospace;font-size:2.2rem;font-weight:900;
+  background:linear-gradient(90deg,#FF6B6B,#FFD700,#4ECDC4);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  text-align:center;letter-spacing:3px;margin-bottom:0.2rem;
+}
+.logo-sub{color:rgba(255,255,255,0.4);text-align:center;font-size:0.85rem;margin-bottom:2rem;letter-spacing:1px;}
+.pinputs{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.4rem;}
+.pf label{font-size:0.72rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:0.4rem;}
+.lp1{color:#FF6B6B;} .lp2{color:#4ECDC4;}
+.pf input{
+  width:100%;padding:0.65rem 1rem;border-radius:12px;
+  border:2px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.07);
+  color:#fff;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;outline:none;
+  transition:border-color 0.2s;
+}
+.pf input:focus{border-color:rgba(255,255,255,0.35);}
+.dlabel{color:rgba(255,255,255,0.5);font-size:0.72rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:0.6rem;display:block;}
+.dbtns{display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;margin-bottom:1.6rem;}
+.dbtn{
+  padding:0.55rem;border-radius:11px;border:2px solid rgba(255,255,255,0.12);
+  background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.55);
+  font-family:'Nunito',sans-serif;font-size:0.82rem;font-weight:800;cursor:pointer;transition:all 0.2s;
+}
+.dbtn.sel{border-color:#FFD700;background:rgba(255,215,0,0.12);color:#FFD700;}
+.dbtn:hover:not(.sel){background:rgba(255,255,255,0.1);color:#fff;}
+.startbtn{
+  width:100%;padding:0.9rem;border-radius:14px;border:none;
+  background:linear-gradient(135deg,#FF6B6B,#FFD700);
+  color:#1a0a00;font-family:'Orbitron',monospace;font-size:0.95rem;font-weight:900;
+  cursor:pointer;letter-spacing:2px;transition:all 0.25s;
+}
+.startbtn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(255,200,0,0.3);}
+.inst{margin-top:1.4rem;background:rgba(255,255,255,0.04);border-radius:12px;padding:0.9rem 1.1rem;border:1px solid rgba(255,255,255,0.07);}
+.ititle{color:rgba(255,255,255,0.6);font-size:0.7rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:0.55rem;}
+.irow{display:flex;align-items:center;gap:0.55rem;margin-bottom:0.3rem;font-size:0.8rem;color:rgba(255,255,255,0.5);}
+.irow strong{color:rgba(255,255,255,0.85);}
+.idot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.dg{background:#4ECDC4;} .dr{background:#FF6B6B;} .dy{background:#FFD700;}
+
+/* ───── GAME SCREEN ───── */
+#gameScreen{
+  background:#0f0c29;
+  flex-direction:column;
+  width:100%;height:100vh;
+  position:relative;
+}
+
+/* TOP STRIP — P2 options (rotated 180deg) */
+.top-strip{
+  position:absolute;top:0;left:0;right:0;height:38%;
+  background:linear-gradient(180deg,#0a2d2a 0%,#0d1a18 100%);
+  border-bottom:2px solid rgba(78,205,196,0.25);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transform:rotate(180deg);
+  padding:0.8rem 1rem 0.5rem;
+}
+.p-name-bar{
+  font-family:'Orbitron',monospace;font-size:0.7rem;font-weight:900;
+  letter-spacing:2px;text-transform:uppercase;
+  padding:0.25rem 0.9rem;border-radius:20px;margin-bottom:0.4rem;
+}
+.p1-bar-tag{background:rgba(255,107,107,0.15);color:#FF6B6B;border:1px solid rgba(255,107,107,0.3);}
+.p2-bar-tag{background:rgba(78,205,196,0.15);color:#4ECDC4;border:1px solid rgba(78,205,196,0.3);}
+.pscore{
+  font-family:'Orbitron',monospace;font-size:2.2rem;font-weight:900;line-height:1;margin-bottom:0.3rem;
+}
+.p1sc{color:#FF6B6B;text-shadow:0 0 20px rgba(255,107,107,0.5);}
+.p2sc{color:#4ECDC4;text-shadow:0 0 20px rgba(78,205,196,0.5);}
+.opts-row{
+  display:flex;gap:0.5rem;width:100%;max-width:480px;
+}
+.opt{
+  flex:1;padding:0.5rem 0.3rem;border-radius:10px;
+  border:2px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.06);
+  color:rgba(255,255,255,0.85);font-family:'Nunito',sans-serif;
+  font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.15s;
+  text-align:center;line-height:1.3;
+}
+.opt:hover{background:rgba(255,255,255,0.13);transform:scale(1.03);}
+.opt.correct{background:rgba(50,205,80,0.3);border-color:#32cd50;color:#a8f5b4;}
+.opt.wrong{background:rgba(255,80,80,0.25);border-color:#ff5050;color:#ffaaaa;}
+.opt:disabled{cursor:not-allowed;opacity:0.7;}
+
+/* BOTTOM STRIP — P1 options */
+.bot-strip{
+  position:absolute;bottom:0;left:0;right:0;height:38%;
+  background:linear-gradient(180deg,#1a0505 0%,#2d0a0a 100%);
+  border-top:2px solid rgba(255,107,107,0.25);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:0.5rem 1rem 0.8rem;
+}
+
+/* MIDDLE SECTION — question */
+.mid-section{
+  position:absolute;top:38%;left:0;right:0;height:24%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:0.4rem 1rem;
+  background:rgba(0,0,0,0.55);
+  z-index:5;
+}
+.mid-top{display:flex;align-items:center;gap:0.7rem;margin-bottom:0.35rem;}
+.cat-chip{
+  font-size:0.6rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;
+  color:rgba(255,215,0,0.7);padding:0.18rem 0.6rem;
+  border:1px solid rgba(255,215,0,0.25);border-radius:20px;
+}
+.q-num{font-size:0.65rem;font-weight:800;letter-spacing:1px;color:rgba(255,255,255,0.3);}
+/* timer */
+.timer-wrap{display:flex;align-items:center;gap:0.3rem;}
+.tcirc{width:28px;height:28px;position:relative;}
+.tsvg{width:28px;height:28px;transform:rotate(-90deg);}
+.ttrack{fill:none;stroke:rgba(255,255,255,0.1);stroke-width:4;}
+.tfill{fill:none;stroke-width:4;stroke-linecap:round;stroke-dasharray:72;stroke-dashoffset:0;transition:stroke-dashoffset 1s linear,stroke 0.3s;}
+.tnum{font-family:'Orbitron',monospace;font-size:0.6rem;font-weight:900;color:#fff;
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+.q-text{
+  font-size:0.95rem;font-weight:700;color:#fff;text-align:center;
+  line-height:1.5;max-width:460px;
+}
+
+/* warn */
+.dwarn{
+  font-size:0.65rem;font-weight:800;letter-spacing:1px;
+  padding:0.18rem 0.65rem;border-radius:99px;
+  background:rgba(255,50,50,0.12);color:#ff6b6b;border:1px solid rgba(255,80,80,0.25);
+  margin-bottom:0.35rem;opacity:0;transition:opacity 0.3s;
+}
+.dwarn.show{opacity:1;}
+
+/* flash */
+.flash{
+  position:fixed;inset:0;pointer-events:none;z-index:99;
+  display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.15s;
+}
+.flash-txt{font-family:'Orbitron',monospace;font-size:2.5rem;font-weight:900;letter-spacing:4px;}
+
+/* ───── RESULT ───── */
+#resultScreen{
+  background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
+  align-items:center;justify-content:center;
+}
+.res-box{
+  background:rgba(255,255,255,0.06);backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,0.12);border-radius:28px;
+  padding:2.5rem;text-align:center;max-width:420px;width:90%;
+}
+.crown{font-size:3.5rem;margin-bottom:0.4rem;}
+.win-lbl{font-size:0.72rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:0.3rem;}
+.win-name{
+  font-family:'Orbitron',monospace;font-size:2rem;font-weight:900;
+  background:linear-gradient(135deg,#FFD700,#FF6B6B);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:1.4rem;
+}
+.res-scores{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.8rem;}
+.rsc{background:rgba(255,255,255,0.05);border-radius:14px;padding:0.9rem;}
+.rsname{font-size:0.72rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-bottom:0.3rem;}
+.rsval{font-family:'Orbitron',monospace;font-size:2.4rem;font-weight:900;}
+.again-btn{
+  width:100%;padding:0.85rem;border-radius:14px;border:none;
+  background:linear-gradient(135deg,#4ECDC4,#FFD700);
+  color:#0a2d2b;font-family:'Orbitron',monospace;font-size:0.9rem;font-weight:900;
+  cursor:pointer;letter-spacing:2px;transition:all 0.25s;
+}
+.again-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(78,205,196,0.35);}
+</style>
+</head>
+<body>
+
+<!-- SETUP -->
+<div id="setupScreen" class="screen active">
+  <div class="setup-wrap">
+    <div class="game-logo">MATH BATTLE</div>
+    <div class="logo-sub">2 PLAYER · CLASS 10 · SAME DEVICE</div>
+    <div class="pinputs">
+      <div class="pf"><label class="lp1">🔴 Player 1 (Bottom)</label><input id="p1name" placeholder="Enter name" maxlength="12"/></div>
+      <div class="pf"><label class="lp2">🟢 Player 2 (Top)</label><input id="p2name" placeholder="Enter name" maxlength="12"/></div>
+    </div>
+    <span class="dlabel">Difficulty</span>
+    <div class="dbtns">
+      <button class="dbtn sel" data-d="easy">⭐ Easy</button>
+      <button class="dbtn" data-d="medium">⭐⭐ Medium</button>
+      <button class="dbtn" data-d="hard">⭐⭐⭐ Hard</button>
+    </div>
+    <button class="startbtn" onclick="startGame()">⚔️ START BATTLE</button>
+    <div class="inst">
+      <div class="ititle">How to Play</div>
+      <div class="irow"><div class="idot dy"></div><strong>Jo pehle answer kare</strong> — uska hi count hoga, dusre ka wait nahi</div>
+      <div class="irow"><div class="idot dg"></div><strong>+1</strong> sahi jawab · <strong>-1</strong> galat jawab</div>
+      <div class="irow"><div class="idot dg"></div>Pehle <strong>8 points</strong> = 🏆 Jeet</div>
+      <div class="irow"><div class="idot dr"></div><strong>-3 points</strong> = ❌ Haar</div>
+    </div>
+  </div>
+</div>
+
+<!-- GAME -->
+<div id="gameScreen" class="screen">
+
+  <!-- P2 TOP (rotated) -->
+  <div class="top-strip">
+    <div class="dwarn" id="p2warn">⚠️ DANGER ZONE!</div>
+    <div class="p-name-bar p2-bar-tag" id="p2tag">PLAYER 2</div>
+    <div class="pscore p2sc" id="p2score">0</div>
+    <div class="opts-row" id="p2opts"></div>
+  </div>
+
+  <!-- MIDDLE — question -->
+  <div class="mid-section">
+    <div class="mid-top">
+      <div class="cat-chip" id="catChip">ALGEBRA</div>
+      <div class="q-num" id="qNum">Q 1/10</div>
+      <div class="timer-wrap">
+        <div class="tcirc">
+          <svg class="tsvg" viewBox="0 0 28 28">
+            <circle class="ttrack" cx="14" cy="14" r="11"/>
+            <circle class="tfill" id="tArc" cx="14" cy="14" r="11"/>
+          </svg>
+          <div class="tnum" id="tNum">20</div>
+        </div>
+      </div>
+    </div>
+    <div class="q-text" id="qText">Loading question...</div>
+  </div>
+
+  <!-- P1 BOTTOM -->
+  <div class="bot-strip">
+    <div class="opts-row" id="p1opts"></div>
+    <div class="pscore p1sc" id="p1score" style="margin-top:0.35rem;">0</div>
+    <div class="p-name-bar p1-bar-tag" id="p1tag">PLAYER 1</div>
+    <div class="dwarn" id="p1warn">⚠️ DANGER ZONE!</div>
+  </div>
+
+  <div class="flash" id="flash"><div class="flash-txt" id="flashTxt"></div></div>
+</div>
+
+<!-- RESULT -->
+<div id="resultScreen" class="screen">
+  <div class="res-box">
+    <div class="crown">🏆</div>
+    <div class="win-lbl">Winner</div>
+    <div class="win-name" id="winName">---</div>
+    <div class="res-scores">
+      <div class="rsc">
+        <div class="rsname" style="color:#FF6B6B;" id="rn1">P1</div>
+        <div class="rsval p1sc" id="rs1">0</div>
+      </div>
+      <div class="rsc">
+        <div class="rsname" style="color:#4ECDC4;" id="rn2">P2</div>
+        <div class="rsval p2sc" id="rs2">0</div>
+      </div>
+    </div>
+    <button class="again-btn" onclick="resetGame()">🔄 PLAY AGAIN</button>
+  </div>
+</div>
+
+<script>
+// correct answer is ALWAYS opts[0]. We shuffle at runtime and track new index.
+const QDB = {
+  easy:[
+    {q:"Pythagoras theorem: if a=3 and b=4, find c?",opts:["5","6","7","8"],cat:"GEOMETRY"},
+    {q:"What is the value of sin 30°?",opts:["1/2","√3/2","1","0"],cat:"TRIGONOMETRY"},
+    {q:"Area of a circle with radius 7? (π = 22/7)",opts:["154 cm²","144 cm²","164 cm²","174 cm²"],cat:"MENSURATION"},
+    {q:"What are the roots of x² − 5x + 6 = 0?",opts:["2 and 3","1 and 6","2 and 4","3 and 4"],cat:"ALGEBRA"},
+    {q:"What is the value of cos 60°?",opts:["1/2","√3/2","0","1"],cat:"TRIGONOMETRY"},
+    {q:"What is the value of tan 45°?",opts:["1","0","√3","1/√3"],cat:"TRIGONOMETRY"},
+    {q:"Total surface area of a cube with side 4 cm?",opts:["96 cm²","64 cm²","48 cm²","80 cm²"],cat:"MENSURATION"},
+    {q:"What is the HCF of 12 and 18?",opts:["6","3","9","12"],cat:"NUMBER THEORY"},
+    {q:"In an AP: a=2, d=3, n=5. Find the 5th term.",opts:["14","12","16","10"],cat:"ALGEBRA"},
+    {q:"Distance between points (0,0) and (3,4)?",opts:["5 units","7 units","4 units","6 units"],cat:"COORDINATE"},
+    {q:"Volume of a cube with side 3 cm?",opts:["27 cm³","18 cm³","9 cm³","36 cm³"],cat:"MENSURATION"},
+    {q:"What is the sum of all angles in a triangle?",opts:["180°","90°","360°","270°"],cat:"GEOMETRY"},
+    {q:"What is the value of sin 90°?",opts:["1","0","1/2","√3/2"],cat:"TRIGONOMETRY"},
+    {q:"What is the LCM of 4 and 6?",opts:["12","8","24","6"],cat:"NUMBER THEORY"},
+    {q:"The degree of a linear polynomial is?",opts:["1","0","2","3"],cat:"ALGEBRA"},
+  ],
+  medium:[
+    {q:"If tan θ = 4/3, what is the value of sin θ?",opts:["4/5","3/5","4/3","3/4"],cat:"TRIGONOMETRY"},
+    {q:"What is the discriminant of 2x² − 5x + 3 = 0?",opts:["1","25","4","0"],cat:"ALGEBRA"},
+    {q:"Curved surface area of cylinder: r=7, h=10? (π=22/7)",opts:["440 cm²","400 cm²","460 cm²","480 cm²"],cat:"MENSURATION"},
+    {q:"If P(A) = 0.4, what is P(not A)?",opts:["0.6","0.4","0.5","0.8"],cat:"PROBABILITY"},
+    {q:"What is the sum of the first 10 natural numbers?",opts:["55","50","45","60"],cat:"ALGEBRA"},
+    {q:"Slope of the line through points (1,2) and (3,6)?",opts:["2","3","1","4"],cat:"COORDINATE"},
+    {q:"What does sin²θ + cos²θ equal?",opts:["1","0","2","sin θ"],cat:"TRIGONOMETRY"},
+    {q:"Midpoint of the segment joining (2,4) and (6,8)?",opts:["(4,6)","(3,5)","(5,7)","(4,5)"],cat:"COORDINATE"},
+    {q:"What is the LCM of 12 and 18?",opts:["36","24","48","30"],cat:"NUMBER THEORY"},
+    {q:"What does sec²θ − tan²θ equal?",opts:["1","-1","0","2"],cat:"TRIGONOMETRY"},
+    {q:"What are the roots of x² − 2x − 8 = 0?",opts:["4 and -2","2 and -4","3 and -3","1 and -8"],cat:"ALGEBRA"},
+    {q:"Probability of getting an even number when rolling a die?",opts:["1/2","1/3","1/6","2/3"],cat:"PROBABILITY"},
+    {q:"Which of these numbers is irrational?",opts:["√2","√4","√9","√16"],cat:"NUMBER THEORY"},
+    {q:"What is the value of cosec 90°?",opts:["1","0","Not defined","√2"],cat:"TRIGONOMETRY"},
+    {q:"Find x: 2x + 3 = 11",opts:["4","3","5","2"],cat:"ALGEBRA"},
+  ],
+  hard:[
+    {q:"If sin A = 1/2 and cos B = 1/2, find A + B (in degrees)?",opts:["90°","60°","120°","150°"],cat:"TRIGONOMETRY"},
+    {q:"What does 1 + tan²θ equal?",opts:["sec²θ","cosec²θ","1","cos²θ"],cat:"TRIGONOMETRY"},
+    {q:"Cone: slant height l=13, r=5. Find curved SA. (π=22/7)",opts:["204.3 cm²","200 cm²","220 cm²","198 cm²"],cat:"MENSURATION"},
+    {q:"For what value of k does kx² − 6x + 1 = 0 have equal roots?",opts:["9","6","3","1"],cat:"ALGEBRA"},
+    {q:"Find the sum: 1 + 3 + 5 + ... + 19",opts:["100","90","110","95"],cat:"ALGEBRA"},
+    {q:"Area of triangle with vertices (0,0), (4,0) and (0,3)?",opts:["6 sq. units","12 sq. units","8 sq. units","9 sq. units"],cat:"COORDINATE"},
+    {q:"Probability of drawing a King from a deck of 52 cards?",opts:["1/13","1/52","2/13","4/26"],cat:"PROBABILITY"},
+    {q:"If 3 is a zero of p(x) = x² + kx − 9, find k.",opts:["0","3","-3","6"],cat:"ALGEBRA"},
+    {q:"Angle of elevation = 60°, height of tower = 30 m. Find distance from base.",opts:["10√3 m","30√3 m","30 m","60 m"],cat:"TRIGONOMETRY"},
+    {q:"How many tangents can be drawn from an external point to a circle?",opts:["2","1","3","Infinite"],cat:"GEOMETRY"},
+    {q:"What is the volume ratio of a cone to cylinder with same radius and height?",opts:["1:3","1:2","2:3","1:4"],cat:"MENSURATION"},
+    {q:"In Euclid's division lemma a = bq + r, what is the condition on r?",opts:["0 ≤ r < b","r < a","r = b","r > 0"],cat:"NUMBER THEORY"},
+    {q:"What is the value of (sin 45° + cos 45°)?",opts:["√2","1","2","1/√2"],cat:"TRIGONOMETRY"},
+    {q:"The common difference of AP whose nth term is 3n + 2?",opts:["3","2","5","1"],cat:"ALGEBRA"},
+    {q:"If the discriminant of ax²+bx+c=0 is zero, roots are?",opts:["Equal and real","Unequal and real","Imaginary","Zero"],cat:"ALGEBRA"},
+  ]
+};
+
+let p1n="Player 1",p2n="Player 2";
+let p1s=0,p2s=0;
+let qIdx=0,qs=[];
+let diff="easy";
+let tTimer=null,tLeft=20,tMax=20;
+let questionDone=false;
+let currentShuffledOpts=[];
+let currentCorrectIdx=0;
+
+document.querySelectorAll('.dbtn').forEach(b=>{
+  b.onclick=()=>{document.querySelectorAll('.dbtn').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');diff=b.dataset.d;};
+});
+
+function shuffleArr(a){return a.sort(()=>Math.random()-0.5);}
+
+function startGame(){
+  p1n=document.getElementById('p1name').value.trim()||"Player 1";
+  p2n=document.getElementById('p2name').value.trim()||"Player 2";
+  p1s=0;p2s=0;qIdx=0;
+  qs=shuffleArr([...QDB[diff]]);
+  tMax=diff==='easy'?25:diff==='medium'?20:15;
+  document.getElementById('p1tag').textContent=p1n.toUpperCase();
+  document.getElementById('p2tag').textContent=p2n.toUpperCase();
+  document.getElementById('rn1').textContent=p1n;
+  document.getElementById('rn2').textContent=p2n;
+  showScreen('gameScreen');
+  loadQ();
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');s.style.display='none';});
+  const el=document.getElementById(id);
+  el.style.display='flex';
+  el.classList.add('active');
+}
+
+function loadQ(){
+  if(qIdx>=qs.length){endGame('draw');return;}
+  questionDone=false;
+  const q=qs[qIdx];
+
+  // Shuffle the options — correct answer is always opts[0], track its new position
+  const correctText=q.opts[0];
+  const shuffled=[...q.opts].sort(()=>Math.random()-0.5);
+  currentShuffledOpts=shuffled;
+  currentCorrectIdx=shuffled.indexOf(correctText);
+
+  document.getElementById('catChip').textContent=q.cat;
+  document.getElementById('qNum').textContent='Q '+(qIdx+1)+'/'+qs.length;
+  document.getElementById('qText').textContent=q.q;
+  renderOpts(shuffled,currentCorrectIdx);
+  startTimer();
+}
+
+function renderOpts(shuffled,correctIdx){
+  ['p1opts','p2opts'].forEach(id=>{
+    const g=document.getElementById(id);
+    g.innerHTML='';
+    shuffled.forEach((o,i)=>{
+      const b=document.createElement('button');
+      b.className='opt';b.textContent=o;
+      const player=id==='p1opts'?'p1':'p2';
+      b.onclick=()=>answer(player,i,correctIdx,b,g);
+      g.appendChild(b);
+    });
+  });
+}
+
+function answer(player,chosen,correct,btn,grid){
+  if(questionDone) return;
+  questionDone=true;
+  clearInterval(tTimer);
+
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+
+  const isCorrect=(chosen===correct);
+  if(isCorrect){
+    btn.classList.add('correct');
+    const other=player==='p1'?'p2opts':'p1opts';
+    document.getElementById(other).children[correct].classList.add('correct');
+    if(player==='p1') p1s++; else p2s++;
+    doFlash(true);
+  } else {
+    btn.classList.add('wrong');
+    grid.children[correct].classList.add('correct');
+    const other=player==='p1'?'p2opts':'p1opts';
+    document.getElementById(other).children[correct].classList.add('correct');
+    if(player==='p1') p1s--; else p2s--;
+    doFlash(false);
+  }
+
+  updateUI();
+  const winner=checkWin();
+  if(winner){setTimeout(()=>endGame(winner),900);return;}
+  setTimeout(()=>{qIdx++;loadQ();},1100);
+}
+
+function updateUI(){
+  document.getElementById('p1score').textContent=p1s;
+  document.getElementById('p2score').textContent=p2s;
+  document.getElementById('p1warn').classList.toggle('show',p1s<=-1);
+  document.getElementById('p2warn').classList.toggle('show',p2s<=-1);
+}
+
+function checkWin(){
+  if(p1s>=8) return 'p1';
+  if(p2s>=8) return 'p2';
+  if(p1s<=-3) return 'p2';
+  if(p2s<=-3) return 'p1';
+  return null;
+}
+
+function doFlash(correct){
+  const f=document.getElementById('flash');
+  const t=document.getElementById('flashTxt');
+  t.textContent=correct?'✓ CORRECT!':'✗ WRONG!';
+  t.style.color=correct?'#4ECDC4':'#FF6B6B';
+  f.style.opacity='1';
+  setTimeout(()=>{f.style.opacity='0';},550);
+}
+
+function startTimer(){
+  clearInterval(tTimer);
+  tLeft=tMax;
+  updateTimerUI();
+  tTimer=setInterval(()=>{
+    tLeft--;
+    updateTimerUI();
+    if(tLeft<=0){
+      clearInterval(tTimer);
+      if(!questionDone){
+        questionDone=true;
+        document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+        // Show correct answer on both sides
+        document.getElementById('p1opts').children[currentCorrectIdx].classList.add('correct');
+        document.getElementById('p2opts').children[currentCorrectIdx].classList.add('correct');
+        p1s--;p2s--;
+        updateUI();
+        const w=checkWin();
+        if(w){setTimeout(()=>endGame(w),900);return;}
+        setTimeout(()=>{qIdx++;loadQ();},1000);
+      }
+    }
+  },1000);
+}
+
+function updateTimerUI(){
+  const pct=tLeft/tMax;
+  const C=72;
+  const arc=document.getElementById('tArc');
+  arc.style.strokeDashoffset=C*(1-pct);
+  arc.style.stroke=pct>0.5?'#4ECDC4':pct>0.25?'#FFD700':'#FF6B6B';
+  document.getElementById('tNum').textContent=tLeft;
+}
+
+function endGame(winner){
+  clearInterval(tTimer);
+  let wname='';
+  if(winner==='p1') wname=p1n;
+  else if(winner==='p2') wname=p2n;
+  else wname="It's a Draw!";
+  document.getElementById('winName').textContent=wname;
+  document.getElementById('rs1').textContent=p1s;
+  document.getElementById('rs2').textContent=p2s;
+  showScreen('resultScreen');
+}
+
+function resetGame(){
+  clearInterval(tTimer);
+  showScreen('setupScreen');
+}
+</script>
+</body>
+</html>

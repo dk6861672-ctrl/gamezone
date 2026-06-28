@@ -739,6 +739,275 @@ eval(_k);
     <div class="footer-logo">KRIXELS</div>
     <div class="footer-text">Made with <span>♥</span> — Krixels v1.0 &nbsp;|&nbsp; <span>All 6 modes are LIVE!</span></div>
   </footer>
+<!--
+  ============================================================
+  YOUR OWN AI CHAT WIDGET — Powered by the Gemini API
+  ============================================================
 
+  HOW TO USE:
+  1. Replace "PASTE_API_KEY_HERE" below with your own Gemini API key
+  2. Copy this entire code block
+  3. Paste it into your website's HTML file, just before the closing </body> tag
+  4. Save and refresh — a chat bubble will appear in the bottom-right corner
+
+  TO CUSTOMIZE:
+  - SYSTEM_PROMPT controls how the AI behaves
+  - WELCOME_MESSAGE is the first message shown to the user
+  - ACCENT_COLOR (#FCA311) and DARK_COLOR (#14213D) can be changed to match your site
+  ============================================================
+-->
+
+<style>
+  #kc-widget * {
+    box-sizing: border-box;
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+
+  #kc-bubble {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #FCA311;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(20, 33, 61, 0.35);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+    animation: kc-pulse 2.5s ease-in-out 1s 2;
+  }
+  #kc-bubble:hover { transform: scale(1.08); }
+
+  @keyframes kc-pulse {
+    0%, 100% { box-shadow: 0 6px 20px rgba(20, 33, 61, 0.35); }
+    50% { box-shadow: 0 6px 20px rgba(20, 33, 61, 0.35), 0 0 0 8px rgba(252, 163, 17, 0.25); }
+  }
+
+  #kc-panel {
+    position: fixed;
+    bottom: 96px;
+    right: 24px;
+    width: 350px;
+    max-width: 90vw;
+    height: 480px;
+    max-height: 70vh;
+    background: #FFFFFF;
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(20, 33, 61, 0.25);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  #kc-panel.kc-open { display: flex; }
+
+  #kc-header {
+    background: #14213D;
+    color: #fff;
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: 15px;
+  }
+  #kc-close {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+    opacity: 0.8;
+  }
+  #kc-close:hover { opacity: 1; }
+
+  #kc-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #FAFAF8;
+  }
+
+  .kc-msg {
+    max-width: 80%;
+    padding: 9px 13px;
+    border-radius: 14px;
+    font-size: 14px;
+    line-height: 1.45;
+    white-space: pre-wrap;
+  }
+  .kc-msg.kc-user {
+    align-self: flex-end;
+    background: #14213D;
+    color: #fff;
+    border-bottom-right-radius: 4px;
+  }
+  .kc-msg.kc-ai {
+    align-self: flex-start;
+    background: #EFEDE7;
+    color: #14213D;
+    border-bottom-left-radius: 4px;
+  }
+
+  #kc-typing {
+    align-self: flex-start;
+    display: none;
+    gap: 4px;
+    padding: 10px 14px;
+  }
+  #kc-typing.kc-show { display: flex; }
+  #kc-typing span {
+    width: 6px;
+    height: 6px;
+    background: #9a9690;
+    border-radius: 50%;
+    animation: kc-bounce 1.2s infinite ease-in-out;
+  }
+  #kc-typing span:nth-child(2) { animation-delay: 0.15s; }
+  #kc-typing span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes kc-bounce {
+    0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
+    40% { transform: translateY(-4px); opacity: 1; }
+  }
+
+  #kc-inputrow {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    border-top: 1px solid #EDEBE6;
+    background: #fff;
+  }
+  #kc-input {
+    flex: 1;
+    border: 1px solid #DEDAD2;
+    border-radius: 20px;
+    padding: 10px 14px;
+    font-size: 14px;
+    outline: none;
+  }
+  #kc-input:focus { border-color: #FCA311; }
+  #kc-send {
+    background: #FCA311;
+    border: none;
+    color: #14213D;
+    font-weight: 600;
+    border-radius: 20px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  #kc-send:hover { background: #e8950a; }
+  #kc-send:disabled { opacity: 0.5; cursor: not-allowed; }
+</style>
+
+<div id="kc-widget">
+  <button id="kc-bubble" aria-label="Open chat">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#14213D" stroke-width="2">
+      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+    </svg>
+  </button>
+
+  <div id="kc-panel">
+    <div id="kc-header">
+      <span>Chat with us</span>
+      <button id="kc-close" aria-label="Close chat">&times;</button>
+    </div>
+    <div id="kc-messages"></div>
+    <div id="kc-typing"><span></span><span></span><span></span></div>
+    <div id="kc-inputrow">
+      <input id="kc-input" type="text" placeholder="Type your question..." />
+      <button id="kc-send">Send</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  // ====== SET YOUR OWN VALUES HERE ======
+  // No API key here anymore — it's kept safely on the server (Vercel).
+  const SYSTEM_PROMPT = "You are a helpful customer-support assistant for this website. Keep answers short, friendly, and direct.";
+  const WELCOME_MESSAGE = "Hi there! How can I help you today?";
+  // =======================================
+
+  const bubble = document.getElementById("kc-bubble");
+  const panel = document.getElementById("kc-panel");
+  const closeBtn = document.getElementById("kc-close");
+  const messagesEl = document.getElementById("kc-messages");
+  const typingEl = document.getElementById("kc-typing");
+  const inputEl = document.getElementById("kc-input");
+  const sendBtn = document.getElementById("kc-send");
+
+  let history = [];
+  let opened = false;
+
+  function addMessage(text, role) {
+    const div = document.createElement("div");
+    div.className = "kc-msg " + (role === "user" ? "kc-user" : "kc-ai");
+    div.textContent = text;
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function togglePanel() {
+    opened = !opened;
+    panel.classList.toggle("kc-open", opened);
+    if (opened && messagesEl.children.length === 0) {
+      addMessage(WELCOME_MESSAGE, "ai");
+    }
+  }
+
+  bubble.addEventListener("click", togglePanel);
+  closeBtn.addEventListener("click", togglePanel);
+
+  async function sendMessage() {
+    const text = inputEl.value.trim();
+    if (!text) return;
+
+    addMessage(text, "user");
+    history.push({ role: "user", parts: [{ text }] });
+    inputEl.value = "";
+    sendBtn.disabled = true;
+    typingEl.classList.add("kc-show");
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: history,
+          systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] }
+        })
+      });
+      const data = await res.json();
+
+      if (data.error) throw new Error(data.error.message || "API error");
+
+      const reply = data.candidates[0].content.parts[0].text;
+      addMessage(reply, "ai");
+      history.push({ role: "model", parts: [{ text: reply }] });
+    } catch (err) {
+      addMessage("Sorry, something went wrong. (" + err.message + ")", "ai");
+    } finally {
+      typingEl.classList.remove("kc-show");
+      sendBtn.disabled = false;
+      inputEl.focus();
+    }
+  }
+
+  sendBtn.addEventListener("click", sendMessage);
+  inputEl.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") sendMessage();
+  });
+})();
+</script>
 </body>
 </html>

@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex,nofollow"/>
+<meta http-equiv="Cache-Control" content="no-store"/>
+<script>
+(function(){
+document.addEventListener('contextmenu',function(e){e.preventDefault();return false;});
+document.addEventListener('keydown',function(e){
+  var b=e.key;
+  if(b==='F12'){e.preventDefault();e.stopPropagation();return false;}
+  if(e.ctrlKey&&e.shiftKey&&('iIjJcCkK'.indexOf(b)!==-1)){e.preventDefault();return false;}
+  if(e.ctrlKey&&('uUsS'.indexOf(b)!==-1)){e.preventDefault();return false;}
+  if(e.ctrlKey&&e.altKey){e.preventDefault();return false;}
+});
+document.addEventListener('selectstart',function(e){e.preventDefault();});
+document.addEventListener('dragstart',function(e){e.preventDefault();});
+document.addEventListener('copy',function(e){e.preventDefault();});
+var _dt=function(){
+  if(window.outerWidth-window.innerWidth>160||window.outerHeight-window.innerHeight>160){
+    document.body.innerHTML='<div style="background:linear-gradient(135deg,#1B2A45,#401C1C);color:white;font-family:monospace;display:flex;align-items:center;justify-content:center;height:100vh;font-size:2rem;letter-spacing:4px;">ACCESS DENIED</div>';
+  }
+};
+setInterval(_dt,800);
+window.addEventListener('load',function(){
+  document.querySelectorAll('img').forEach(function(i){
+    i.setAttribute('oncontextmenu','return false;');
+    i.setAttribute('draggable','false');
+  });
+});
+var ns=document.createElement('style');
+ns.textContent='@media print{body{display:none!important;}}*{-webkit-user-select:none!important;-moz-user-select:none!important;user-select:none!important;}';
+document.head.appendChild(ns);
+})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Krixel — Diamond Vault</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Quicksand:wght@500;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --p1: #4D96FF;
+    --p2: #FF6B6B;
+    --bg-color: #2B1B14;
+    --gold: #FFD93D;
+    --text: #FFF3E6;
+    --muted: #C9A98F;
+    --strip1: #1B2A45;
+    --strip2: #401C1C;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg-color);
+    font-family: 'Quicksand', sans-serif;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+    color: var(--text);
+  }
+
+  .bg-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  .orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.22; animation: orb-float 9s ease-in-out infinite; }
+  .orb1 { width: 480px; height: 480px; background: radial-gradient(circle, var(--p1), transparent 70%); top: -180px; right: -100px; }
+  .orb2 { width: 420px; height: 420px; background: radial-gradient(circle, var(--p2), transparent 70%); bottom: -140px; left: -100px; animation-delay: 4.5s; }
+  @keyframes orb-float { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-22px) scale(1.05)} }
+
+  #setup-screen {
+    position: fixed; inset: 0; z-index: 50;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 2rem; text-align: center;
+    overflow-y: auto;
+  }
+  #setup-screen.hidden { display: none; }
+
+  .setup-logo {
+    font-family: 'Orbitron', monospace; font-weight: 900; font-size: 1rem;
+    letter-spacing: 5px;
+    background: linear-gradient(90deg, var(--p1), var(--gold), var(--p2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 1.2rem; position: relative; z-index: 1;
+  }
+  .setup-title {
+    font-family: 'Baloo 2', sans-serif; font-weight: 800;
+    font-size: clamp(2.3rem, 9vw, 4rem); letter-spacing: 2px;
+    background: linear-gradient(135deg, var(--p1) 0%, var(--gold) 50%, var(--p2) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 0.3rem; line-height: 1.05; position: relative; z-index: 1;
+    filter: drop-shadow(0 2px 10px rgba(255,217,61,0.25));
+  }
+  .setup-sub {
+    font-size: 0.8rem; color: var(--muted); margin-bottom: 2rem;
+    letter-spacing: 3px; text-transform: uppercase; position: relative; z-index: 1;
+    font-weight: 700;
+  }
+
+  .name-inputs {
+    display: flex; gap: 1.2rem; margin-bottom: 2rem;
+    flex-wrap: wrap; justify-content: center; position: relative; z-index: 1;
+  }
+  .player-input-wrap { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+  .player-tag {
+    font-family: 'Orbitron', monospace; font-size: 0.6rem; font-weight: 700;
+    letter-spacing: 2px; padding: 0.28rem 1rem; border-radius: 20px;
+  }
+  .p1-tag { background: rgba(77,150,255,0.15); color: var(--p1); border: 1.5px solid rgba(77,150,255,0.5); }
+  .p2-tag { background: rgba(255,107,107,0.15); color: var(--p2); border: 1.5px solid rgba(255,107,107,0.5); }
+  .player-input {
+    background: rgba(255,255,255,0.06); border: 2px solid rgba(255,255,255,0.15);
+    border-radius: 14px; padding: 0.75rem 1.1rem;
+    color: var(--text); font-family: 'Quicksand', sans-serif;
+    font-size: 0.95rem; font-weight: 700; text-align: center; width: 180px;
+    outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .player-input.p1:focus { border-color: var(--p1); box-shadow: 0 0 0 3px rgba(77,150,255,0.2); }
+  .player-input.p2:focus { border-color: var(--p2); box-shadow: 0 0 0 3px rgba(255,107,107,0.2); }
+
+  .btn-start {
+    font-family: 'Orbitron', monospace; font-size: 0.85rem; font-weight: 700;
+    letter-spacing: 2px; padding: 1rem 3rem; border-radius: 50px;
+    border: none; cursor: pointer;
+    background: linear-gradient(135deg, var(--p1), var(--gold), var(--p2));
+    background-size: 200% 200%; animation: grad-shift 4s ease infinite;
+    color: #1A1208; transition: all 0.25s;
+    box-shadow: 0 6px 24px rgba(255,217,61,0.3);
+    position: relative; z-index: 1;
+  }
+  .btn-start:hover { transform: translateY(-3px) scale(1.03); }
+  @keyframes grad-shift { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+
+  .rules-note {
+    margin-top: 1.6rem; font-size: 0.72rem; color: var(--muted);
+    max-width: 340px; line-height: 1.5; position: relative; z-index: 1;
+  }
+
+  .app {
+    width: 100vw; height: 100dvh; height: 100vh;
+    display: none; flex-direction: column;
+    position: relative; overflow: hidden;
+  }
+  .app.show { display: flex; }
+
+  .player-strip {
+    flex-shrink: 0; display: flex; align-items: center;
+    justify-content: space-between; padding: 8px 18px;
+    position: relative; z-index: 5; height: 64px;
+    transition: background 0.4s ease, box-shadow 0.4s ease;
+  }
+  .player-strip.p2-strip {
+    transform: rotate(180deg);
+    background: var(--strip2);
+    border-bottom: 2.5px solid rgba(255,107,107,0.3);
+  }
+  .player-strip.p1-strip {
+    background: var(--strip1);
+    border-top: 2.5px solid rgba(77,150,255,0.3);
+  }
+  .player-left { display: flex; flex-direction: column; gap: 1px; }
+  .player-brand {
+    font-family: 'Orbitron', monospace; font-weight: 900;
+    font-size: 0.6rem; letter-spacing: 3px; color: var(--muted); opacity: 0.6;
+  }
+  .player-name {
+    font-family: 'Baloo 2', sans-serif; font-weight: 700;
+    font-size: 0.95rem; letter-spacing: 0.5px;
+  }
+  .p1-strip .player-name { color: var(--p1); }
+  .p2-strip .player-name { color: var(--p2); }
+  .score-display {
+    font-family: 'Orbitron', monospace; font-weight: 900;
+    font-size: 1.8rem; line-height: 1;
+  }
+  .p1-strip .score-display { color: var(--p1); }
+  .p2-strip .score-display { color: var(--p2); }
+
+  .lock-badge {
+    position: absolute; top: 12px; left: 12px; z-index: 8;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.18);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  }
+  .lock-dot { width: 9px; height: 5px; border-radius: 3px; }
+  .lock-dot.p1 { background: var(--p1); }
+  .lock-dot.p2 { background: var(--p2); }
+  .lock-dot.center { width: 4px; height: 4px; border-radius: 50%; background: var(--muted); }
+
+  .exit-btn {
+    position: absolute; top: 50%; right: 8px; transform: translateY(-50%) rotate(90deg);
+    transform-origin: center; z-index: 8;
+    background: rgba(255,255,255,0.92); color: #2B1B14;
+    border: none; border-radius: 50%; width: 46px; height: 46px;
+    font-family: 'Orbitron', monospace; font-size: 0.55rem; font-weight: 800; letter-spacing: 1px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+  }
+
+  /* ── BOARD: holds the big tap zones, hand graphics, and the vault ── */
+  .board-wrap {
+    flex: 1; position: relative; z-index: 1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+
+  .status-bar {
+    position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+    font-family: 'Quicksand', sans-serif; font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 1px; color: var(--muted);
+    padding: 0.35rem 1.2rem; background: rgba(0,0,0,0.4);
+    border: 2px solid rgba(255,255,255,0.12); border-radius: 50px;
+    display: flex; align-items: center;
+    justify-content: center; transition: all 0.3s;
+    max-width: 78%; width: max-content; z-index: 6; text-align: center;
+  }
+  .status-bar.status-go { color: var(--gold); border-color: rgba(255,217,61,0.5); }
+
+  /* tap zones cover the full top/bottom halves of the board */
+  .tap-zone {
+    position: absolute; left: 0; right: 0; height: 50%; z-index: 2;
+    background: transparent; border: none; cursor: pointer;
+  }
+  .tap-zone.zone-p2 { top: 0; }
+  .tap-zone.zone-p1 { bottom: 0; }
+
+  /* big full-hand graphics that creep in from each edge */
+  .hand-figure {
+    position: absolute; left: 50%; width: min(48vw, 200px);
+    pointer-events: none; z-index: 3;
+    filter: drop-shadow(0 10px 16px rgba(0,0,0,0.55));
+    transition: top 0.22s cubic-bezier(0.34,1.2,0.64,1), bottom 0.22s cubic-bezier(0.34,1.2,0.64,1), transform 0.2s ease;
+  }
+  .hand-figure.top { top: -34%; transform: translateX(-50%); }
+  .hand-figure.bottom { bottom: -34%; transform: translateX(-50%) rotate(180deg); }
+  .hand-figure.grabbing { animation: hand-grab 0.45s ease; }
+  @keyframes hand-grab {
+    0% { transform: translateX(-50%) scale(1); }
+    50% { transform: translateX(-50%) scale(1.18); }
+    100% { transform: translateX(-50%) scale(1); }
+  }
+  .hand-figure.bottom.grabbing {
+    animation: hand-grab-b 0.45s ease;
+  }
+  @keyframes hand-grab-b {
+    0% { transform: translateX(-50%) rotate(180deg) scale(1); }
+    50% { transform: translateX(-50%) rotate(180deg) scale(1.18); }
+    100% { transform: translateX(-50%) rotate(180deg) scale(1); }
+  }
+  .hand-svg { width: 100%; height: auto; display: block; }
+  .hand-svg .palm, .hand-svg .digit { fill: #111; stroke: #000; stroke-width: 4; stroke-linejoin: round; }
+  .hand-figure.p1 .hand-svg .palm, .hand-figure.p1 .hand-svg .digit { filter: drop-shadow(0 0 6px rgba(77,150,255,0.55)); }
+  .hand-figure.p2 .hand-svg .palm, .hand-figure.p2 .hand-svg .digit { filter: drop-shadow(0 0 6px rgba(255,107,107,0.55)); }
+
+  /* the vault / safe scene, sits centered above the hands' path */
+  .scene {
+    position: relative; width: min(58vw, 220px); height: min(30vh, 170px);
+    display: flex; align-items: center; justify-content: center; z-index: 4;
+  }
+
+  .light-cone {
+    position: absolute; inset: -40%;
+    background: conic-gradient(from var(--light-angle,0deg),
+      transparent 0deg, rgba(255,217,61,0) 8deg,
+      rgba(255,217,61,0.30) 26deg, rgba(255,217,61,0) 44deg, transparent 360deg);
+    filter: blur(8px);
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+  }
+  .light-cone.off { opacity: 0; }
+
+  .vault-frame {
+    position: relative; width: 100%; height: 100%;
+    border: 5px solid #1A1108;
+    border-radius: 10px;
+    background: linear-gradient(180deg, rgba(74,51,36,0.4), rgba(74,51,36,0.15));
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.45);
+  }
+
+  .capsule {
+    position: relative; width: 70%; height: 84%;
+    border-radius: 100px;
+    background: linear-gradient(135deg, rgba(120,170,255,0.18), rgba(120,170,255,0.05));
+    border: 3px solid rgba(160,200,255,0.55);
+    backdrop-filter: blur(1px);
+    box-shadow: 0 0 24px rgba(120,170,255,0.35), inset 0 0 24px rgba(120,170,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    overflow: visible;
+    transition: transform 0.15s ease;
+  }
+  .capsule::before {
+    content: '';
+    position: absolute; inset: 6px; border-radius: 90px;
+    border: 1px solid rgba(255,255,255,0.25);
+    pointer-events: none;
+  }
+  /* three different "vary every round" opening styles */
+  .capsule.open-variant-0 { animation: open0 0.6s ease forwards; }
+  @keyframes open0 { to { transform: rotateY(68deg) scale(1.05); border-color: rgba(255,217,61,0.85); } }
+  .capsule.open-variant-1 { animation: open1 0.6s ease forwards; }
+  @keyframes open1 { 50%{transform:scale(1.18);} to { transform: scale(0.88) rotate(10deg); border-color: rgba(255,217,61,0.85); } }
+  .capsule.open-variant-2 { animation: open2 0.6s ease forwards; }
+  @keyframes open2 { to { transform: translateX(8px) rotateZ(-9deg) scale(1.08); border-color: rgba(255,217,61,0.85); } }
+
+  .diamond {
+    font-size: clamp(2.2rem, 8vw, 3.2rem);
+    filter: drop-shadow(0 0 16px rgba(120,200,255,0.85));
+    animation: diamond-float 2.4s ease-in-out infinite;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    z-index: 2;
+  }
+  @keyframes diamond-float {
+    0%,100% { transform: translateY(0) rotateY(0deg); }
+    50% { transform: translateY(-6px) rotateY(180deg); }
+  }
+  .diamond.grabbed { opacity: 0; transform: scale(0.2) translateY(0); }
+
+  .step-track {
+    position: absolute; bottom: -22px; left: 6%; right: 6%; height: 5px;
+    border-radius: 6px; background: rgba(255,255,255,0.1); overflow: hidden;
+  }
+  .step-fill { height: 100%; width: 0%; border-radius: 6px; transition: width 0.18s ease; background: var(--p1); }
+  .step-track2 {
+    position: absolute; bottom: -34px; left: 6%; right: 6%; height: 5px;
+    border-radius: 6px; background: rgba(255,255,255,0.1); overflow: hidden;
+  }
+  .step-fill2 { height: 100%; width: 0%; border-radius: 6px; transition: width 0.18s ease; background: var(--p2); }
+
+  .round-toast {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%) scale(0.6);
+    font-family: 'Orbitron', monospace; font-weight: 900; font-size: 1rem;
+    letter-spacing: 2px; padding: 0.8rem 1.6rem; border-radius: 16px;
+    background: rgba(0,0,0,0.8); color: var(--gold); z-index: 10;
+    opacity: 0; pointer-events: none; transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    text-align: center; white-space: nowrap;
+  }
+  .round-toast.show { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+
+  .center-btn {
+    position: absolute; bottom: 70px; right: 16px; z-index: 8;
+    background: rgba(255,255,255,0.08);
+    border: 2px solid rgba(255,255,255,0.18);
+    color: var(--muted); width: 36px; height: 36px; border-radius: 50%;
+    font-size: 1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .center-btn:hover { border-color: var(--gold); color: var(--gold); transform: rotate(-20deg); }
+
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(10,6,3,0.75);
+    display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(10px);
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-box {
+    background: #241710; border: 2.5px solid rgba(255,217,61,0.3);
+    border-radius: 24px; padding: 2.4rem 2rem;
+    text-align: center; max-width: 340px; width: 90%;
+    position: relative; overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    animation: modal-in 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes modal-in { from{transform:scale(0.7) translateY(30px);opacity:0} to{transform:scale(1);opacity:1} }
+  .modal-glow {
+    position: absolute; width: 300px; height: 300px;
+    border-radius: 50%; filter: blur(70px); opacity: 0.3;
+    top: 50%; left: 50%; transform: translate(-50%,-50%);
+    pointer-events: none;
+  }
+  .modal-logo {
+    font-family: 'Orbitron', monospace; font-weight: 900;
+    font-size: 0.72rem; letter-spacing: 4px; color: var(--gold);
+    margin-bottom: 1rem; display: block; position: relative; z-index: 1;
+  }
+  .modal-emoji { font-size: 3.6rem; margin-bottom: 0.6rem; position: relative; z-index: 1; animation: bounce-in 0.5s 0.2s both; }
+  @keyframes bounce-in { from{transform:scale(0);opacity:0} 60%{transform:scale(1.25)} to{transform:scale(1);opacity:1} }
+  .modal-title {
+    font-family: 'Baloo 2', sans-serif; font-weight: 800;
+    font-size: 1.5rem; color: var(--text); margin-bottom: 0.3rem;
+    position: relative; z-index: 1;
+  }
+  .modal-subtitle {
+    color: var(--muted); font-size: 0.85rem; margin-bottom: 1.4rem;
+    position: relative; z-index: 1; font-weight: 600;
+  }
+  .modal-scores { display: flex; gap: 0.8rem; justify-content: center; margin-bottom: 1.5rem; position: relative; z-index: 1; }
+  .modal-score { padding: 0.7rem 1.2rem; border-radius: 14px; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.12); min-width: 100px; }
+  .modal-score-name { font-family: 'Orbitron', monospace; font-size: 0.55rem; font-weight: 700; letter-spacing: 1px; margin-bottom: 0.3rem; }
+  .modal-score-num { font-family: 'Orbitron', monospace; font-size: 1.7rem; font-weight: 900; }
+  .modal-btns { display: flex; flex-direction: column; gap: 0.5rem; position: relative; z-index: 1; }
+  .btn-pa-main {
+    font-family: 'Orbitron', monospace; font-size: 0.78rem; font-weight: 700;
+    letter-spacing: 2px; padding: 0.9rem 2rem; border-radius: 50px;
+    border: none; cursor: pointer;
+    background: linear-gradient(135deg, var(--p1), var(--gold), var(--p2));
+    background-size: 200%; animation: grad-shift 3s ease infinite;
+    color: #1A1208; transition: all 0.2s;
+  }
+  .btn-pa-main:hover { transform: translateY(-2px); }
+  .btn-pa-back {
+    font-family: 'Quicksand', sans-serif; font-size: 0.8rem; font-weight: 700;
+    letter-spacing: 1px; padding: 0.7rem 2rem; border-radius: 50px;
+    border: 2px solid rgba(255,255,255,0.15); background: transparent;
+    color: var(--muted); cursor: pointer; transition: all 0.2s;
+  }
+  .btn-pa-back:hover { border-color: var(--gold); color: var(--gold); }
+
+  #confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 199; }
+</style>
+</head>
+<body>
+
+<div class="bg-orbs"><div class="orb orb1"></div><div class="orb orb2"></div></div>
+<canvas id="confetti-canvas"></canvas>
+
+<!-- hidden SVG hand symbol, reused for both players -->
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="hand-shape" viewBox="0 0 200 260">
+    <g class="digit">
+      <rect x="40" y="60" width="26" height="100" rx="13"/>
+    </g>
+    <g class="digit">
+      <rect x="72" y="30" width="26" height="130" rx="13"/>
+    </g>
+    <g class="digit">
+      <rect x="104" y="40" width="26" height="120" rx="13"/>
+    </g>
+    <g class="digit">
+      <rect x="136" y="62" width="24" height="98" rx="12"/>
+    </g>
+    <g class="digit" transform="rotate(-40 40 165)">
+      <rect x="10" y="140" width="24" height="80" rx="12"/>
+    </g>
+    <rect class="palm" x="35" y="140" width="135" height="100" rx="42"/>
+  </symbol>
+</svg>
+
+<div id="setup-screen">
+  <div class="setup-logo">KRIXEL</div>
+  <div class="setup-title">DIAMOND<br>VAULT</div>
+  <div class="setup-sub">CLICK · REACH · GRAB</div>
+
+  <div class="name-inputs">
+    <div class="player-input-wrap">
+      <div class="player-tag p1-tag">PLAYER 1</div>
+      <input id="p1-input" class="player-input p1" maxlength="12" placeholder="Blue Hand" />
+    </div>
+    <div class="player-input-wrap">
+      <div class="player-tag p2-tag">PLAYER 2</div>
+      <input id="p2-input" class="player-input p2" maxlength="12" placeholder="Red Hand" />
+    </div>
+  </div>
+
+  <button class="btn-start" id="start-btn">START GAME</button>
+  <div class="rules-note">A diamond glows inside the vault. Each click pushes your hand one step closer — whoever's hand reaches the diamond first grabs it and scores a point. The vault opens differently every round! First to <b>7 points</b> wins.</div>
+</div>
+
+<div class="app" id="game-screen">
+  <div class="player-strip p2-strip" id="p2-strip">
+    <div class="player-left">
+      <div class="player-brand">KRIXEL</div>
+      <div class="player-name" id="p2-name-el">Red Hand</div>
+    </div>
+    <div class="score-display" id="p2-score-el">0</div>
+  </div>
+
+  <div class="lock-badge">
+    <div class="lock-dot p1"></div>
+    <div class="lock-dot center"></div>
+    <div class="lock-dot p2"></div>
+  </div>
+  <button class="exit-btn" id="exit-btn">EXIT</button>
+
+  <div class="board-wrap">
+    <div class="status-bar" id="status-bar">CLICK YOUR SIDE TO REACH THE DIAMOND!</div>
+
+    <button class="tap-zone zone-p2" id="p2-tap" aria-label="Player 2 tap zone"></button>
+    <button class="tap-zone zone-p1" id="p1-tap" aria-label="Player 1 tap zone"></button>
+
+    <div class="hand-figure top p2" id="hand-p2">
+      <svg class="hand-svg"><use href="#hand-shape"/></svg>
+    </div>
+    <div class="hand-figure bottom p1" id="hand-p1">
+      <svg class="hand-svg"><use href="#hand-shape"/></svg>
+    </div>
+
+    <div class="scene">
+      <div class="light-cone" id="light-cone"></div>
+      <div class="vault-frame">
+        <div class="capsule" id="capsule">
+          <div class="diamond" id="diamond">💎</div>
+        </div>
+        <div class="step-track"><div class="step-fill" id="fill-p1"></div></div>
+        <div class="step-track2"><div class="step-fill2" id="fill-p2"></div></div>
+      </div>
+      <div class="round-toast" id="round-toast"></div>
+    </div>
+  </div>
+
+  <button class="center-btn" id="restart-btn" title="Restart">↻</button>
+
+  <div class="player-strip p1-strip" id="p1-strip">
+    <div class="player-left">
+      <div class="player-brand">KRIXEL</div>
+      <div class="player-name" id="p1-name-el">Blue Hand</div>
+    </div>
+    <div class="score-display" id="p1-score-el">0</div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="win-modal">
+  <div class="modal-box">
+    <div class="modal-glow" id="modal-glow"></div>
+    <span class="modal-logo">KRIXEL · DIAMOND VAULT</span>
+    <div class="modal-emoji" id="modal-emoji">🏆</div>
+    <div class="modal-title" id="modal-title">PLAYER WINS!</div>
+    <div class="modal-subtitle" id="modal-subtitle">Fastest fingers grab the diamond!</div>
+    <div class="modal-scores">
+      <div class="modal-score">
+        <div class="modal-score-name" id="ms-p1-name" style="color:var(--p1)">P1</div>
+        <div class="modal-score-num" id="ms-p1-score" style="color:var(--p1)">0</div>
+      </div>
+      <div class="modal-score">
+        <div class="modal-score-name" id="ms-p2-name" style="color:var(--p2)">P2</div>
+        <div class="modal-score-num" id="ms-p2-score" style="color:var(--p2)">0</div>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-pa-main" id="play-again-btn">PLAY AGAIN</button>
+      <button class="btn-pa-back" id="back-menu-btn">MAIN MENU</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const WIN_SCORE = 7;
+  const HAND_STEPS = 6;        // clicks needed to reach the diamond
+  const HAND_START = -34;      // % off-screen starting offset
+  const HAND_END   = 4;        // % offset when hand is right at the vault
+
+  const state = {
+    p1: 'Blue Hand', p2: 'Red Hand',
+    scores: [0,0],
+    steps: [0,0],
+    roundActive: false,
+    lightAngle: 0,
+    lightDir: 1,
+    lastTick: null,
+    rafId: null
+  };
+
+  const setupScreen = document.getElementById('setup-screen');
+  const gameScreen   = document.getElementById('game-screen');
+  const p1Input = document.getElementById('p1-input');
+  const p2Input = document.getElementById('p2-input');
+  const startBtn = document.getElementById('start-btn');
+
+  const p1NameEl = document.getElementById('p1-name-el');
+  const p2NameEl = document.getElementById('p2-name-el');
+  const p1ScoreEl = document.getElementById('p1-score-el');
+  const p2ScoreEl = document.getElementById('p2-score-el');
+  const p1Tap = document.getElementById('p1-tap');
+  const p2Tap = document.getElementById('p2-tap');
+
+  const handP1 = document.getElementById('hand-p1');
+  const handP2 = document.getElementById('hand-p2');
+  const fillP1 = document.getElementById('fill-p1');
+  const fillP2 = document.getElementById('fill-p2');
+
+  const lightCone = document.getElementById('light-cone');
+  const capsule = document.getElementById('capsule');
+  const diamond = document.getElementById('diamond');
+  const statusBar = document.getElementById('status-bar');
+  const roundToast = document.getElementById('round-toast');
+  const restartBtn = document.getElementById('restart-btn');
+  const exitBtn = document.getElementById('exit-btn');
+
+  const winModal = document.getElementById('win-modal');
+  const playAgainBtn = document.getElementById('play-again-btn');
+  const backMenuBtn = document.getElementById('back-menu-btn');
+
+  startBtn.addEventListener('click', startGame);
+  restartBtn.addEventListener('click', () => { if(confirm('Restart the match?')) resetMatch(); });
+  exitBtn.addEventListener('click', () => { if(confirm('Exit to main menu?')) goToMenu(); });
+  playAgainBtn.addEventListener('click', () => { winModal.classList.remove('show'); stopConfetti(); resetMatch(); });
+  backMenuBtn.addEventListener('click', () => { winModal.classList.remove('show'); stopConfetti(); goToMenu(); });
+
+  [p1Input, p2Input].forEach(inp => {
+    inp.addEventListener('keydown', e => { if(e.key === 'Enter') startGame(); });
+  });
+
+  function goToMenu() {
+    gameScreen.classList.remove('show');
+    setupScreen.classList.remove('hidden');
+    cancelLoop();
+  }
+
+  function startGame() {
+    state.p1 = (p1Input.value || 'Blue Hand').trim().slice(0,14);
+    state.p2 = (p2Input.value || 'Red Hand').trim().slice(0,14);
+    p1NameEl.textContent = state.p1;
+    p2NameEl.textContent = state.p2;
+    document.getElementById('ms-p1-name').textContent = state.p1;
+    document.getElementById('ms-p2-name').textContent = state.p2;
+
+    setupScreen.classList.add('hidden');
+    gameScreen.classList.add('show');
+    resetMatch();
+  }
+
+  function resetMatch() {
+    state.scores = [0,0];
+    updateScores();
+    startRound();
+  }
+
+  function startRound() {
+    state.steps = [0,0];
+    state.roundActive = true;
+    state.lightAngle = Math.random()*360;
+    state.lightDir = Math.random() < 0.5 ? 1 : -1;
+    lightCone.classList.remove('off');
+    diamond.classList.remove('grabbed');
+    handP1.classList.remove('grabbing');
+    handP2.classList.remove('grabbing');
+    capsule.className = 'capsule'; // clear any previous open-variant
+    updateHands();
+    setStatus('CLICK YOUR SIDE TO REACH THE DIAMOND!', false);
+    state.lastTick = performance.now();
+    startLoop();
+  }
+
+  function setStatus(msg, go) {
+    statusBar.textContent = msg;
+    statusBar.classList.toggle('status-go', !!go);
+  }
+
+  function startLoop() {
+    cancelLoop();
+    function loop(ts) {
+      const dt = (ts - state.lastTick) / 1000;
+      state.lastTick = ts;
+      state.lightAngle += state.lightDir * 70 * dt;
+      if (state.lightAngle > 340) state.lightDir = -1;
+      if (state.lightAngle < 20) state.lightDir = 1;
+      lightCone.style.setProperty('--light-angle', state.lightAngle + 'deg');
+      state.rafId = requestAnimationFrame(loop);
+    }
+    state.rafId = requestAnimationFrame(loop);
+  }
+  function cancelLoop() { if (state.rafId) cancelAnimationFrame(state.rafId); state.rafId = null; }
+
+  function updateHands() {
+    const frac1 = state.steps[0] / HAND_STEPS;
+    const frac2 = state.steps[1] / HAND_STEPS;
+    const offset1 = HAND_START + frac1 * (HAND_END - HAND_START);
+    const offset2 = HAND_START + frac2 * (HAND_END - HAND_START);
+    handP1.style.bottom = offset1 + '%';
+    handP2.style.top = offset2 + '%';
+    fillP1.style.width = (frac1*100) + '%';
+    fillP2.style.width = (frac2*100) + '%';
+  }
+
+  function tap(playerIdx) {
+    if (!state.roundActive) return;
+    state.steps[playerIdx] = Math.min(HAND_STEPS, state.steps[playerIdx] + 1);
+    updateHands();
+    if (state.steps[playerIdx] >= HAND_STEPS) grabDiamond(playerIdx);
+  }
+
+  p1Tap.addEventListener('pointerdown', e => { e.preventDefault(); tap(0); });
+  p2Tap.addEventListener('pointerdown', e => { e.preventDefault(); tap(1); });
+
+  function grabDiamond(winnerIdx) {
+    state.roundActive = false;
+    lightCone.classList.add('off');
+    diamond.classList.add('grabbed');
+    (winnerIdx === 0 ? handP1 : handP2).classList.add('grabbing');
+
+    // pick a random vault-opening style so every round looks a bit different
+    const variant = Math.floor(Math.random() * 3);
+    capsule.classList.add('open-variant-' + variant);
+
+    state.scores[winnerIdx]++;
+    updateScores();
+
+    const winnerName = winnerIdx === 0 ? state.p1 : state.p2;
+    showToast(winnerName + ' GRABBED IT!');
+    setStatus(winnerName + ' got the diamond! +1 point', true);
+
+    if (state.scores[winnerIdx] >= WIN_SCORE) {
+      setTimeout(showWin, 900);
+    } else {
+      setTimeout(startRound, 1600);
+    }
+  }
+
+  function showToast(msg) {
+    roundToast.textContent = msg;
+    roundToast.classList.add('show');
+    setTimeout(() => roundToast.classList.remove('show'), 1300);
+  }
+
+  function updateScores() {
+    p1ScoreEl.textContent = state.scores[0];
+    p2ScoreEl.textContent = state.scores[1];
+  }
+
+  function showWin() {
+    cancelLoop();
+    const [s1, s2] = state.scores;
+    let title, sub, glowColor;
+    if (s1 > s2) {
+      title = state.p1 + ' WINS!';
+      sub = 'Master diamond hunter!'; glowColor = 'var(--p1)';
+    } else {
+      title = state.p2 + ' WINS!';
+      sub = 'Master diamond hunter!'; glowColor = 'var(--p2)';
+    }
+    document.getElementById('modal-title').textContent = title;
+    document.getElementById('modal-subtitle').textContent = sub;
+    document.getElementById('modal-glow').style.background = glowColor;
+    document.getElementById('ms-p1-score').textContent = s1;
+    document.getElementById('ms-p2-score').textContent = s2;
+    winModal.classList.add('show');
+    launchConfetti();
+  }
+
+  let confettiAF = null;
+  function launchConfetti() {
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const colors = ['#4D96FF','#FF6B6B','#FFD93D','#6BCB77','#C77DFF','#FFFFFF'];
+    let particles = Array.from({length: 110}, () => ({
+      x: Math.random() * canvas.width,
+      y: -10 - Math.random() * 150,
+      w: 7 + Math.random() * 7, h: 3 + Math.random() * 4,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      rot: Math.random()*Math.PI*2,
+      vx: (Math.random()-0.5)*3, vy: 2+Math.random()*3,
+      vrot: (Math.random()-0.5)*0.14, opacity: 1
+    }));
+    function draw() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      particles.forEach(p => {
+        p.x+=p.vx; p.y+=p.vy; p.rot+=p.vrot;
+        if(p.y>canvas.height*0.6) p.opacity-=0.018;
+        ctx.save();
+        ctx.globalAlpha=Math.max(0,p.opacity);
+        ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+        ctx.fillStyle=p.color;
+        ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+        ctx.restore();
+      });
+      particles = particles.filter(p=>p.opacity>0);
+      if(particles.length>0) confettiAF=requestAnimationFrame(draw);
+      else ctx.clearRect(0,0,canvas.width,canvas.height);
+    }
+    confettiAF=requestAnimationFrame(draw);
+  }
+  function stopConfetti() {
+    if(confettiAF) cancelAnimationFrame(confettiAF);
+    const canvas = document.getElementById('confetti-canvas');
+    canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
+  }
+
+  window.addEventListener('resize', () => {
+    const canvas = document.getElementById('confetti-canvas');
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  });
+})();
+</script>
+</body>
+</html>
